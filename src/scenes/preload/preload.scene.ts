@@ -1,0 +1,95 @@
+import { ASSETS, SCENES } from "@constants";
+import Phaser from "phaser";
+
+export class PreloadScene extends Phaser.Scene {
+  constructor() {
+    super(SCENES.PRELOAD);
+  }
+
+  preload() {
+    // Spritesheets
+    this.load.spritesheet(
+      ASSETS.SPRITESHEETS.WATER,
+      "assets/spritesheets/water.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      }
+    );
+
+    this.createProgressBar();
+  }
+
+  createProgressBar() {
+    const { width, height } = this.scale;
+    const progressBoxWidth = 320;
+    const progressBoxHeight = 50;
+    const progressBoxSpacing = 10;
+
+    const progressBar = this.add.graphics();
+
+    const progressBox = this.add.graphics();
+    progressBox.fillStyle(0x222222, 0.8);
+    progressBox.fillRect(
+      width / 2 - progressBoxWidth / 2,
+      height / 2 - progressBoxHeight / 2,
+      progressBoxWidth,
+      progressBoxHeight
+    );
+
+    this.make
+      .text({
+        x: width / 2,
+        y: height / 2 - progressBoxHeight / 2 - 10,
+        text: "Loading...",
+        style: {
+          font: "20px monospace",
+          color: "#ffffff",
+        },
+      })
+      .setOrigin(0.5, 1);
+    const percentText = this.make
+      .text({
+        x: width / 2,
+        y: height / 2,
+        text: "0%",
+        style: {
+          font: "18px monospace",
+          color: "#ffffff",
+        },
+      })
+      .setOrigin(0.5, 0.5);
+    const assetText = this.make
+      .text({
+        x: width / 2,
+        y: height / 2 + progressBoxHeight / 2 + 10,
+        text: "",
+        style: {
+          font: "18px monospace",
+          color: "#ffffff",
+        },
+      })
+      .setOrigin(0.5, 0);
+
+    this.load.on("progress", (value: number) => {
+      progressBar.clear();
+      progressBar.fillStyle(0xffffff, 1);
+      progressBar.fillRect(
+        width / 2 - progressBoxWidth / 2 + progressBoxSpacing,
+        height / 2 - progressBoxHeight / 2 + progressBoxSpacing,
+        (progressBoxWidth - progressBoxSpacing * 2) * value,
+        progressBoxHeight - progressBoxSpacing * 2
+      );
+
+      percentText.setText(`${Math.floor(value * 100)}%`);
+    });
+    this.load.on("fileprogress", (file: Phaser.Loader.File) => {
+      assetText.setText(`Loading asset: ${file.key}`);
+    });
+    this.load.on("complete", () => {
+      this.scene.start(SCENES.BACKGROUND);
+      this.scene.start(SCENES.MENU);
+      this.scene.stop(this);
+    });
+  }
+}

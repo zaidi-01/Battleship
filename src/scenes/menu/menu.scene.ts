@@ -3,7 +3,7 @@ import { TextButton } from "@shared";
 
 export class MenuScene extends Phaser.Scene {
   constructor() {
-    super({ key: SCENES.MENU });
+    super(SCENES.MENU);
   }
 
   create() {
