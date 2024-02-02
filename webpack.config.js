@@ -12,6 +12,10 @@ module.exports = {
     ],
   },
   resolve: {
+    alias: {
+      "@constants": path.resolve(__dirname, "src/constants"),
+      "@shared": path.resolve(__dirname, "src/shared"),
+    },
     extensions: [".tsx", ".ts", ".js"],
   },
   output: {

@@ -1,27 +1,17 @@
 import "phaser";
+import { MenuScene } from "./scenes";
+import { GAME_HEIGHT, GAME_WIDTH } from "./constants";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
-  width: 800,
-  height: 600,
-  physics: {
-    default: "arcade",
-    arcade: {
-      gravity: { y: 200 },
-    },
+  scale: {
+    mode: Phaser.Scale.FIT,
+    parent: "game",
+    autoCenter: Phaser.Scale.CENTER_BOTH,
+    width: GAME_WIDTH,
+    height: GAME_HEIGHT,
   },
-  scene: {
-    preload: preload,
-    create: create,
-  },
+  scene: [MenuScene],
 };
 
 const game = new Phaser.Game(config);
-
-function preload() {
-  // Load assets here
-}
-
-function create() {
-  // Create game objects here
-}
