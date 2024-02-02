@@ -10,6 +10,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: GAME_WIDTH,
     height: GAME_HEIGHT,
   },
+  backgroundColor: "#062436",
   scene: [PreloadScene, BackgroundScene, MenuScene],
 };
 

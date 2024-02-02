@@ -25,8 +25,7 @@ export class BackgroundScene extends Phaser.Scene {
 
     this.waterTileSprite = this.add
       .tileSprite(0, 0, width, height, ASSETS.SPRITESHEETS.WATER)
-      .setOrigin(0, 0)
-      .setAlpha(0.5);
+      .setOrigin(0, 0);
   }
 
   update() {
