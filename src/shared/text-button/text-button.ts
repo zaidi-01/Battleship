@@ -1,6 +1,16 @@
-import Phaser from "phaser";
-
+/**
+ * Represents a text button in a Phaser scene.
+ */
 export class TextButton extends Phaser.GameObjects.Text {
+  /**
+   * Initializes a new text button.
+   * @param scene The Phaser scene to which the button belongs.
+   * @param x The x-coordinate of the button.
+   * @param y The y-coordinate of the button.
+   * @param text The text to display on the button.
+   * @param style The style of the text.
+   * @param callback The callback function to be called when the button is clicked.
+   */
   constructor(
     scene: Phaser.Scene,
     x: number,

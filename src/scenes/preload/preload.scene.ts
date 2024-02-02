@@ -1,11 +1,22 @@
 import { ASSETS, SCENES } from "@constants";
 import Phaser from "phaser";
 
+/**
+ * Represents the Preload Scene in the game.
+ * This scene is responsible for preloading game assets and displaying a progress bar.
+ */
 export class PreloadScene extends Phaser.Scene {
+
+  /**
+   * Initializes the Preload Scene.
+   */
   constructor() {
     super(SCENES.PRELOAD);
   }
 
+  /**
+   * Preloads game assets and creates a progress bar.
+   */
   preload() {
     // Spritesheets
     this.load.spritesheet(
@@ -20,6 +31,9 @@ export class PreloadScene extends Phaser.Scene {
     this.createProgressBar();
   }
 
+  /**
+   * Creates a progress bar and displays loading progress.
+   */
   createProgressBar() {
     const { width, height } = this.scale;
     const progressBoxWidth = 320;

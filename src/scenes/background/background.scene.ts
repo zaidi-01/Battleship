@@ -1,14 +1,23 @@
 import { ASSETS, SCENES } from "@constants";
 import Phaser from "phaser";
 
+/**
+ * Represents the background scene of the game.
+ */
 export class BackgroundScene extends Phaser.Scene {
   private waterSprite!: Phaser.GameObjects.Sprite;
   private waterTileSprite!: Phaser.GameObjects.TileSprite;
 
+  /**
+   * Initializes the background scene.
+   */
   constructor() {
     super(SCENES.BACKGROUND);
   }
 
+  /**
+   * Creates the background scene.
+   */
   create() {
     const { width, height } = this.scale;
 
@@ -17,7 +26,9 @@ export class BackgroundScene extends Phaser.Scene {
       .setVisible(false);
     this.waterSprite.anims.create({
       key: ASSETS.SPRITESHEETS.WATER,
-      frames: this.waterSprite.anims.generateFrameNumbers("water"),
+      frames: this.waterSprite.anims.generateFrameNumbers(
+        ASSETS.SPRITESHEETS.WATER
+      ),
       frameRate: 7,
       repeat: -1,
     });
@@ -28,6 +39,9 @@ export class BackgroundScene extends Phaser.Scene {
       .setOrigin(0, 0);
   }
 
+  /**
+   * Updates the water tile sprite frame.
+   */
   update() {
     this.waterTileSprite.setFrame(this.waterSprite.frame.name);
   }
