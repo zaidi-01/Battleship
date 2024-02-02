@@ -4,10 +4,11 @@ import express from "express";
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(express.static(path.join(__dirname, "../dist")));
+// TODO: Improve the path to the dist folder
+app.use(express.static(path.join(__dirname, "../../dist"))); 
 
 app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "../public/index.html"));
+  res.sendFile(path.join(__dirname, "../../public/index.html"));
 });
 
 app.listen(port, () => {
