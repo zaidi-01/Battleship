@@ -1,4 +1,4 @@
-import { SCENES } from "@constants";
+import { ASSETS, SCENES } from "@constants";
 import Phaser from "phaser";
 
 export class BackgroundScene extends Phaser.Scene {
@@ -12,10 +12,14 @@ export class BackgroundScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.spritesheet("water", "assets/spritesheets/water.png", {
-      frameWidth: 32,
-      frameHeight: 32,
-    });
+    this.load.spritesheet(
+      ASSETS.SPRITESHEETS.WATER,
+      "assets/spritesheets/water.png",
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      }
+    );
   }
 
   create() {
