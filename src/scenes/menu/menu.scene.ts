@@ -5,7 +5,6 @@ import { TextButton } from "@shared";
  * Represents the menu scene of the game.
  */
 export class MenuScene extends Phaser.Scene {
-
   /**
    * Initializes the menu scene.
    */

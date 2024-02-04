@@ -1,6 +1,7 @@
+import "reflect-metadata";
 import { GAME_HEIGHT, GAME_WIDTH } from "@constants";
+import { BackgroundScene, MenuScene, PreloadScene } from "@scenes";
 import "phaser";
-import { BackgroundScene, MenuScene, PreloadScene } from "./scenes";
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
