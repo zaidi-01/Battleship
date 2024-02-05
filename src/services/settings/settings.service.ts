@@ -45,7 +45,6 @@ export class SettingsService {
    */
   constructor() {
     this.loadSettings();
-    console.log("SettingsService initialized");
   }
 
   /**
