@@ -2,6 +2,7 @@ import { GAME_HEIGHT, GAME_WIDTH } from "@constants";
 import {
   BackgroundScene,
   DifficultyScene,
+  GameScene,
   MenuScene,
   PreloadScene,
 } from "@scenes";
@@ -25,7 +26,13 @@ export class GameService extends Phaser.Game {
         height: GAME_HEIGHT,
       },
       backgroundColor: "#062436",
-      scene: [PreloadScene, BackgroundScene, MenuScene, DifficultyScene],
+      scene: [
+        PreloadScene,
+        BackgroundScene,
+        MenuScene,
+        DifficultyScene,
+        GameScene,
+      ],
     });
   }
 }

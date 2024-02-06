@@ -1,15 +1,8 @@
 import { EVENTS, SCENES } from "@constants";
-import { Difficulty } from "@enums";
+import { Difficulty, GameState, GameType } from "@enums";
+import { GameSceneData } from "@scenes";
 import { GameService } from "@services";
 import { delay, inject, singleton } from "tsyringe";
-
-/**
- * Represents the type of game.
- */
-enum GameType {
-  Local = "Local",
-  Online = "Online",
-}
 
 @singleton()
 export class GameController {
@@ -36,6 +29,11 @@ export class GameController {
     }
 
     this.difficulty = difficulty;
+    context.scene.start(SCENES.GAME, {
+      difficulty,
+      gameType: GameType.Local,
+      gameState: GameState.ShipPlacement,
+    } as GameSceneData);
   }
 
   /**
@@ -49,7 +47,7 @@ export class GameController {
     difficultyScene.events.on(
       EVENTS.DIFFICULTY_SELECTED,
       (difficulty: Difficulty) => {
-        this.startLocalGame(context, difficulty);
+        this.startLocalGame(difficultyScene, difficulty);
       }
     );
   }

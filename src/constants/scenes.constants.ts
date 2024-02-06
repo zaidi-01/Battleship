@@ -4,6 +4,7 @@
 export const SCENES = {
   BACKGROUND: "Background",
   DIFFICULTY: "Difficulty",
+  GAME: "Game",
   MENU: "Menu",
   PRELOAD: "Preload",
 };
