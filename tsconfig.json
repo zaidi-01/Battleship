@@ -31,6 +31,8 @@
     "baseUrl": "./",                                     /* Specify the base directory to resolve non-relative module names. */
     "paths": {                                           /* Specify a set of entries that re-map imports to additional lookup locations. */
       "@constants": ["src/constants"],
+      "@controllers": ["src/controllers"],
+      "@enums": ["src/enums"],
       "@scenes": ["src/scenes"],
       "@services": ["src/services"],
       "@shared": ["src/shared"],

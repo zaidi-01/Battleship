@@ -14,6 +14,8 @@ module.exports = {
   resolve: {
     alias: {
       "@constants": path.resolve(__dirname, "src/constants"),
+      "@controllers": path.resolve(__dirname, "src/controllers"),
+      "@enums": path.resolve(__dirname, "src/enums"),
       "@scenes": path.resolve(__dirname, "src/scenes"),
       "@services": path.resolve(__dirname, "src/services"),
       "@shared": path.resolve(__dirname, "src/shared"),

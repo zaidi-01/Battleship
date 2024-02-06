@@ -1,15 +1,21 @@
 import { SCENES } from "@constants";
 import { TextButton } from "@shared";
+import { GameController } from "@controllers";
+import { container } from "tsyringe";
 
 /**
  * Represents the menu scene of the game.
  */
 export class MenuScene extends Phaser.Scene {
+  private gameController: GameController;
+
   /**
    * Initializes the menu scene.
    */
   constructor() {
     super(SCENES.MENU);
+
+    this.gameController = container.resolve(GameController);
   }
 
   /**
@@ -29,5 +35,7 @@ export class MenuScene extends Phaser.Scene {
   /**
    * Starts a local game.
    */
-  startLocalGame() {}
+  startLocalGame() {
+    this.gameController.startLocalGame(this);
+  }
 }
