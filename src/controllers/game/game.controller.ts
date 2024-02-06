@@ -29,11 +29,7 @@ export class GameController {
     }
 
     this.difficulty = difficulty;
-    context.scene.start(SCENES.GAME, {
-      difficulty,
-      gameType: GameType.Local,
-      gameState: GameState.ShipPlacement,
-    } as GameSceneData);
+    context.scene.start(SCENES.GAME);
   }
 
   /**
