@@ -48,7 +48,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
   /**
    * Updates the game board.
    */
-  update() {
+  preUpdate() {
     this.emit(EVENTS.UPDATE_BOARD);
   }
 

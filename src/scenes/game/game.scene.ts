@@ -22,8 +22,8 @@ export class GameScene extends Phaser.Scene {
   create() {
     const boardsContainer = this.add.container(0, 0);
 
-    this.localBoard = new GameBoardComponent(this, 0, 0);
-    this.enemyBoard = new GameBoardComponent(this, 0, 0);
+    this.localBoard = new GameBoardComponent(this, 0, 0).addToUpdateList();
+    this.enemyBoard = new GameBoardComponent(this, 0, 0).addToUpdateList();
 
     boardsContainer.add(this.localBoard);
     boardsContainer.add(this.enemyBoard);
@@ -46,15 +46,6 @@ export class GameScene extends Phaser.Scene {
     this.events.on(EVENTS.LOCAL_TURN, () => {
       this.enemyBoard.enable();
     });
-  }
-
-  /**
-   * Updates the game scene.
-   */
-  update() {
-    // TODO: Replace with Phaser update logic.
-    this.localBoard.update();
-    this.enemyBoard.update();
   }
 
   /**
