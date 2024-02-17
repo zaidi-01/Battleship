@@ -1,5 +1,6 @@
 import { BOARD_CELL_SIZE, BOARD_SIZE, EVENTS } from "@constants";
 import { Ship } from "@interfaces";
+import { isShipOverlapping } from "@utilities";
 
 /**
  * Represents the game board.
@@ -76,7 +77,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
                 ship.direction === "horizontal" ? size : BOARD_CELL_SIZE;
               rect.height =
                 ship.direction === "vertical" ? size : BOARD_CELL_SIZE;
-            } else if (!this.isShipOverlapping(ship)) {
+            } else if (!isShipOverlapping(ship, this.ships)) {
               rect.disableInteractive();
               this.removeListener(EVENTS.UPDATE_BOARD);
 
@@ -115,37 +116,12 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
         ship.x = Math.floor(rectX / BOARD_CELL_SIZE);
         ship.y = Math.floor(rectY / BOARD_CELL_SIZE);
 
-        if (this.isShipOverlapping(ship)) {
+        if (isShipOverlapping(ship, this.ships)) {
           rect.setFillStyle(0xff0000, 1);
         } else {
           rect.setFillStyle(0x000000, 1);
         }
       });
-    });
-  }
-
-  /**
-   * Checks if a ship is overlapping with another ship.
-   * @param ship The ship to check.
-   */
-  private isShipOverlapping(ship: Ship) {
-    const shipBounds = new Phaser.Geom.Rectangle(
-      ship.x,
-      ship.y,
-      (ship.direction === "horizontal" ? ship.length : 1) - 0.1,
-      (ship.direction === "vertical" ? ship.length : 1) - 0.1
-    );
-    return this.ships.some((placedShip) => {
-      const placedShipBounds = new Phaser.Geom.Rectangle(
-        placedShip.x,
-        placedShip.y,
-        (placedShip.direction === "horizontal" ? placedShip.length : 1) - 0.1,
-        (placedShip.direction === "vertical" ? placedShip.length : 1) - 0.1
-      );
-      return Phaser.Geom.Intersects.RectangleToRectangle(
-        shipBounds,
-        placedShipBounds
-      );
     });
   }
 }

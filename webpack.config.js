@@ -21,6 +21,7 @@ module.exports = {
       "@scenes": path.resolve(__dirname, "src/scenes"),
       "@services": path.resolve(__dirname, "src/services"),
       "@shared": path.resolve(__dirname, "src/shared"),
+      "@utilities": path.resolve(__dirname, "src/utilities"),
     },
     extensions: [".tsx", ".ts", ".js"],
   },
