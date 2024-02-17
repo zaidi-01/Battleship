@@ -43,16 +43,26 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.events.on(EVENTS.SHIPS_PLACE, this.placeShips, this);
-    this.events.on(EVENTS.LOCAL_TURN, () => {
-      this.enemyBoard.enable();
-    });
+    this.events.on(EVENTS.LOCAL_TURN, this.localTurn, this);
   }
 
   /**
    * Places the ships on the local board.
+   * @param ships The ships to place.
    */
-  async placeShips(ships: Ship[]) {
+  private async placeShips(ships: Ship[]) {
     await this.localBoard.placeShips(ships);
     this.events.emit(EVENTS.SHIPS_PLACED);
+  }
+
+  /**
+   * Handles the local turn.
+   */
+  private localTurn() {
+    this.enemyBoard.enable();
+    this.enemyBoard.once(EVENTS.GRID_CLICKED, (point: Phaser.Geom.Point) => {
+      this.enemyBoard.disable();
+      this.events.emit(EVENTS.LOCAL_TURN_END, point);
+    });
   }
 }

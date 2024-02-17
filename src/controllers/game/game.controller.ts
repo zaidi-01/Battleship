@@ -46,6 +46,10 @@ export class GameController {
     this.gameScene.events.on(EVENTS.SHIPS_PLACED, () => {
       this.gameScene.events.emit(EVENTS.LOCAL_TURN);
     });
+    this.gameScene.events.on(EVENTS.LOCAL_TURN_END, (point: Phaser.Geom.Point) => {
+      console.log(point);
+      this.gameScene.events.emit(EVENTS.LOCAL_TURN);
+    });
   }
 
   /**

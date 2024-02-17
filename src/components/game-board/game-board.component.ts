@@ -7,6 +7,7 @@ import { isShipOverlapping } from "@utilities";
  */
 export class GameBoardComponent extends Phaser.GameObjects.Container {
   private ships: Ship[] = [];
+  private cellsClicked: Phaser.Geom.Point[] = [];
 
   private gridCursor!: Phaser.GameObjects.Rectangle;
 
@@ -31,18 +32,37 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
       .rectangle(0, 0, BOARD_CELL_SIZE, BOARD_CELL_SIZE)
       .setOrigin(0)
       .setFillStyle(0x000000, 0.5)
-      .setStrokeStyle(1, 0xff0000)
+      .setStrokeStyle(1, 0x0000ff)
       .setInteractive(
         new Phaser.Geom.Rectangle(0, 0, BOARD_SIZE, BOARD_SIZE),
         Phaser.Geom.Rectangle.Contains
       )
       .setActive(false)
-      .setVisible(false);
+      .setVisible(false)
+      .on(
+        Phaser.Input.Events.GAMEOBJECT_POINTER_DOWN,
+        (pointer: Phaser.Input.Pointer) => {
+          if (pointer.leftButtonDown()) {
+            const cell = this.objectCell(this.gridCursor);
+            if (!this.hasCellBeenClicked(cell)) {
+              this.cellsClicked.push(cell);
+              this.emit(EVENTS.GRID_CLICKED, cell);
+            }
+          }
+        }
+      );
     this.add(this.gridCursor);
-    this.on(
-      EVENTS.UPDATE_BOARD,
-      this.moveWithCursor.bind(this, this.gridCursor)
-    );
+    this.on(EVENTS.UPDATE_BOARD, () => {
+      this.moveWithCursor(this.gridCursor);
+
+      if (this.hasCellBeenClicked(this.objectCell(this.gridCursor))) {
+        this.gridCursor.setFillStyle(0xff0000, 0.5);
+        this.gridCursor.setStrokeStyle(1, 0xff0000);
+      } else {
+        this.gridCursor.setFillStyle(0x000000, 0.5);
+        this.gridCursor.setStrokeStyle(1, 0x0000ff);
+      }
+    });
   }
 
   /**
@@ -58,6 +78,13 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
   enable() {
     this.bringToTop(this.gridCursor);
     this.gridCursor.setActive(true).setVisible(true);
+  }
+
+  /**
+   * Disables the game board.
+   */
+  disable() {
+    this.gridCursor.setActive(false).setVisible(false);
   }
 
   /**
@@ -160,5 +187,28 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
 
     object.x = newX;
     object.y = newY;
+  }
+
+  /**
+   * Gets the cell of an object.
+   * @param object The object to get the cell from.
+   * @returns The cell of the object.
+   */
+  private objectCell(object: Phaser.GameObjects.Rectangle) {
+    return new Phaser.Geom.Point(
+      Math.floor(object.x / BOARD_CELL_SIZE),
+      Math.floor(object.y / BOARD_CELL_SIZE)
+    );
+  }
+
+  /**
+   * Checks if a cell has been clicked.
+   * @param cell The cell to check.
+   * @returns True if the cell has been clicked, false otherwise.
+   */
+  private hasCellBeenClicked(cell: Phaser.Geom.Point) {
+    return this.cellsClicked.some(
+      (point) => point.x === cell.x && point.y === cell.y
+    );
   }
 }
