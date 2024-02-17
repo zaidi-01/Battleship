@@ -1,12 +1,17 @@
-import { EVENTS, SCENES, SHIPS } from "@constants";
+import { BOARD_SIZE, EVENTS, SCENES, SHIPS } from "@constants";
 import { Difficulty } from "@enums";
+import { Ship } from "@interfaces";
 import { GameService } from "@services";
+import { isShipOverlapping } from "@utilities";
 import { delay, inject, singleton } from "tsyringe";
 
 @singleton()
 export class GameController {
   private difficulty!: Difficulty;
   private gameScene!: Phaser.Scene;
+
+  private localShips: Ship[] = [];
+  private enemyShips: Ship[] = [];
 
   /**
    * Initializes the game controller.
@@ -33,7 +38,10 @@ export class GameController {
 
     this.gameScene = context.scene.get(SCENES.GAME);
     this.gameScene.events.on(Phaser.Scenes.Events.CREATE, () => {
-      this.gameScene.events.emit(EVENTS.SHIP_PLACEMENT, [...SHIPS]);
+      this.localShips = [...SHIPS];
+      this.gameScene.events.emit(EVENTS.SHIP_PLACEMENT, this.localShips);
+
+      this.enemyShips = this.randomizeShips();
     });
   }
 
@@ -51,5 +59,48 @@ export class GameController {
         this.startLocalGame(difficultyScene, difficulty);
       }
     );
+  }
+
+  /**
+   * Generates a random set of ships.
+   */
+  private randomizeShips(): Ship[] {
+    const ships: Ship[] = [];
+
+    for (const ship of SHIPS) {
+      let tryCount = 0;
+      let placed = false;
+
+      const newShip: Ship = { ...ship };
+      do {
+        newShip.direction = Phaser.Math.RND.pick(["horizontal", "vertical"]);
+        newShip.x = Phaser.Math.RND.between(
+          0,
+          BOARD_SIZE -
+            1 -
+            (newShip.direction === "horizontal" ? newShip.length : 0)
+        );
+        newShip.y = Phaser.Math.RND.between(
+          0,
+          BOARD_SIZE -
+            1 -
+            (newShip.direction === "vertical" ? newShip.length : 0)
+        );
+
+        tryCount++;
+        placed = true;
+
+        if (tryCount > 9) {
+          placed = false;
+          break;
+        }
+      } while (isShipOverlapping(newShip, ships));
+
+      if (placed) {
+        ships.push(newShip);
+      }
+    }
+
+    return ships;
   }
 }
