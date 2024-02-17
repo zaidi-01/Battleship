@@ -42,7 +42,8 @@ export class GameScene extends Phaser.Scene {
       y: height - padding - boardHeight,
     });
 
-    this.events.on(EVENTS.SHIP_PLACEMENT, this.placeShips, this);
+    this.events.on(EVENTS.SHIPS_PLACE, this.placeShips, this);
+    this.events.on(EVENTS.LOCAL_TURN, () => console.log("Local turn"));
   }
 
   /**
@@ -55,7 +56,8 @@ export class GameScene extends Phaser.Scene {
   /**
    * Places the ships on the local board.
    */
-  placeShips(ships: Ship[]) {
-    this.localBoard.placeShips(ships);
+  async placeShips(ships: Ship[]) {
+    await this.localBoard.placeShips(ships);
+    this.events.emit(EVENTS.SHIPS_PLACED);
   }
 }

@@ -39,9 +39,12 @@ export class GameController {
     this.gameScene = context.scene.get(SCENES.GAME);
     this.gameScene.events.on(Phaser.Scenes.Events.CREATE, () => {
       this.localShips = [...SHIPS];
-      this.gameScene.events.emit(EVENTS.SHIP_PLACEMENT, this.localShips);
+      this.gameScene.events.emit(EVENTS.SHIPS_PLACE, this.localShips);
 
       this.enemyShips = this.randomizeShips();
+    });
+    this.gameScene.events.on(EVENTS.SHIPS_PLACED, () => {
+      this.gameScene.events.emit(EVENTS.LOCAL_TURN);
     });
   }
 
