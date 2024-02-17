@@ -19,13 +19,14 @@ export class GameService extends Phaser.Game {
   constructor() {
     super({
       type: Phaser.AUTO,
+      backgroundColor: "#062436",
+      disableContextMenu: true,
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: GAME_WIDTH,
         height: GAME_HEIGHT,
       },
-      backgroundColor: "#062436",
       scene: [
         PreloadScene,
         BackgroundScene,

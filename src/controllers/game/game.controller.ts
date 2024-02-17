@@ -1,12 +1,12 @@
-import { EVENTS, SCENES } from "@constants";
-import { Difficulty, GameState, GameType } from "@enums";
-import { GameSceneData } from "@scenes";
+import { EVENTS, SCENES, SHIPS } from "@constants";
+import { Difficulty } from "@enums";
 import { GameService } from "@services";
 import { delay, inject, singleton } from "tsyringe";
 
 @singleton()
 export class GameController {
   private difficulty!: Difficulty;
+  private gameScene!: Phaser.Scene;
 
   /**
    * Initializes the game controller.
@@ -30,6 +30,11 @@ export class GameController {
 
     this.difficulty = difficulty;
     context.scene.start(SCENES.GAME);
+
+    this.gameScene = context.scene.get(SCENES.GAME);
+    this.gameScene.events.on(Phaser.Scenes.Events.CREATE, () => {
+      this.gameScene.events.emit(EVENTS.SHIP_PLACEMENT, [...SHIPS]);
+    });
   }
 
   /**

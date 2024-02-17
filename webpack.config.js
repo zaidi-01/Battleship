@@ -17,6 +17,7 @@ module.exports = {
       "@controllers": path.resolve(__dirname, "src/controllers"),
       "@components": path.resolve(__dirname, "src/components"),
       "@enums": path.resolve(__dirname, "src/enums"),
+      "@interfaces": path.resolve(__dirname, "src/interfaces"),
       "@scenes": path.resolve(__dirname, "src/scenes"),
       "@services": path.resolve(__dirname, "src/services"),
       "@shared": path.resolve(__dirname, "src/shared"),

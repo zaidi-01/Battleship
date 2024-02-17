@@ -1,12 +1,6 @@
 import { GameBoardComponent } from "@components";
-import { SCENES } from "@constants";
-import { Difficulty, GameState, GameType } from "@enums";
-
-export interface GameSceneData {
-  difficulty: Difficulty;
-  gameType: GameType;
-  gameState: GameState;
-}
+import { EVENTS, SCENES } from "@constants";
+import { Ship } from "@interfaces";
 
 /**
  * Represents the game scene.
@@ -47,5 +41,21 @@ export class GameScene extends Phaser.Scene {
       x: padding,
       y: height - padding - boardHeight,
     });
+
+    this.events.on(EVENTS.SHIP_PLACEMENT, this.placeShips, this);
+  }
+
+  /**
+   * Updates the game scene.
+   */
+  update() {
+    this.localBoard.update();
+  }
+
+  /**
+   * Places the ships on the local board.
+   */
+  placeShips(ships: Ship[]) {
+    this.localBoard.placeShips(ships);
   }
 }
