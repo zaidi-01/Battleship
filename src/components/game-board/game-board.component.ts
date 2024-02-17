@@ -20,9 +20,8 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
    * Creates the game board.
    */
   create() {
-    const size = BOARD_SIZE * BOARD_CELL_SIZE;
     const grid = this.scene.add
-      .grid(0, 0, size, size, BOARD_CELL_SIZE, BOARD_CELL_SIZE)
+      .grid(0, 0, BOARD_SIZE, BOARD_SIZE, BOARD_CELL_SIZE, BOARD_CELL_SIZE)
       .setOrigin(0)
       .setFillStyle(0xffffff, 0.5)
       .setOutlineStyle(0x000000, 1);
@@ -34,7 +33,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
       .setFillStyle(0x000000, 0.5)
       .setStrokeStyle(1, 0xff0000)
       .setInteractive(
-        new Phaser.Geom.Rectangle(0, 0, size, size),
+        new Phaser.Geom.Rectangle(0, 0, BOARD_SIZE, BOARD_SIZE),
         Phaser.Geom.Rectangle.Contains
       )
       .setActive(false)
@@ -42,31 +41,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
     this.add(this.gridCursor);
     this.on(
       EVENTS.UPDATE_BOARD,
-      // TODO: Turn this into a private method.
-      () => {
-        const pointer = this.scene.input.activePointer;
-        const originX = this.x;
-        const originY = this.y;
-        const pointerX = pointer.x;
-        const pointerY = pointer.y;
-        const cursorX = Math.max(
-          0,
-          Math.min(
-            size - BOARD_CELL_SIZE,
-            Math.floor((pointerX - originX) / BOARD_CELL_SIZE) * BOARD_CELL_SIZE
-          )
-        );
-        const cursorY = Math.max(
-          0,
-          Math.min(
-            size - BOARD_CELL_SIZE,
-            Math.floor((pointerY - originY) / BOARD_CELL_SIZE) * BOARD_CELL_SIZE
-          )
-        );
-
-        this.gridCursor.x = cursorX;
-        this.gridCursor.y = cursorY;
-      }
+      this.moveWithCursor.bind(this, this.gridCursor)
     );
   }
 
@@ -139,33 +114,14 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
       this.add(rect);
 
       const moveFunc = () => {
-        const pointer = this.scene.input.activePointer;
-        const originX = this.x;
-        const originY = this.y;
-        const pointerX = pointer.x;
-        const pointerY = pointer.y;
-        const rectX = Math.max(
-          0,
-          Math.min(
-            BOARD_SIZE * BOARD_CELL_SIZE -
-              (ship.direction === "horizontal" ? size : BOARD_CELL_SIZE),
-            Math.floor((pointerX - originX) / BOARD_CELL_SIZE) * BOARD_CELL_SIZE
-          )
-        );
-        const rectY = Math.max(
-          0,
-          Math.min(
-            BOARD_SIZE * BOARD_CELL_SIZE -
-              (ship.direction === "vertical" ? size : BOARD_CELL_SIZE),
-            Math.floor((pointerY - originY) / BOARD_CELL_SIZE) * BOARD_CELL_SIZE
-          )
+        this.moveWithCursor(
+          rect,
+          ship.direction === "horizontal" ? size : BOARD_CELL_SIZE,
+          ship.direction === "vertical" ? size : BOARD_CELL_SIZE
         );
 
-        rect.x = rectX;
-        rect.y = rectY;
-
-        ship.x = Math.floor(rectX / BOARD_CELL_SIZE);
-        ship.y = Math.floor(rectY / BOARD_CELL_SIZE);
+        ship.x = Math.floor(rect.x / BOARD_CELL_SIZE);
+        ship.y = Math.floor(rect.y / BOARD_CELL_SIZE);
 
         if (isShipOverlapping(ship, this.ships)) {
           rect.setFillStyle(0xff0000, 1);
@@ -173,11 +129,36 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
           rect.setFillStyle(0x000000, 1);
         }
       };
-      this.addListener(
-        EVENTS.UPDATE_BOARD,
-        // TODO: Turn this into a private method.
-        moveFunc
-      );
+      this.addListener(EVENTS.UPDATE_BOARD, moveFunc);
     });
+  }
+
+  private moveWithCursor(
+    object: Phaser.GameObjects.Rectangle,
+    objectSizeX?: number,
+    objectSizeY?: number
+  ) {
+    const pointer = this.scene.input.activePointer;
+    const originX = this.x;
+    const originY = this.y;
+    const pointerX = pointer.x;
+    const pointerY = pointer.y;
+    const newX = Math.max(
+      0,
+      Math.min(
+        BOARD_SIZE - (objectSizeX || BOARD_CELL_SIZE),
+        Math.floor((pointerX - originX) / BOARD_CELL_SIZE) * BOARD_CELL_SIZE
+      )
+    );
+    const newY = Math.max(
+      0,
+      Math.min(
+        BOARD_SIZE - (objectSizeY || BOARD_CELL_SIZE),
+        Math.floor((pointerY - originY) / BOARD_CELL_SIZE) * BOARD_CELL_SIZE
+      )
+    );
+
+    object.x = newX;
+    object.y = newY;
   }
 }

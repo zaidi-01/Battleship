@@ -1,4 +1,4 @@
-import { BOARD_SIZE, EVENTS, SCENES, SHIPS } from "@constants";
+import { BOARD_LENGTH, EVENTS, SCENES, SHIPS } from "@constants";
 import { Difficulty } from "@enums";
 import { Ship } from "@interfaces";
 import { GameService } from "@services";
@@ -79,13 +79,13 @@ export class GameController {
         newShip.direction = Phaser.Math.RND.pick(["horizontal", "vertical"]);
         newShip.x = Phaser.Math.RND.between(
           0,
-          BOARD_SIZE -
+          BOARD_LENGTH -
             1 -
             (newShip.direction === "horizontal" ? newShip.length : 0)
         );
         newShip.y = Phaser.Math.RND.between(
           0,
-          BOARD_SIZE -
+          BOARD_LENGTH -
             1 -
             (newShip.direction === "vertical" ? newShip.length : 0)
         );
