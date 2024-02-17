@@ -5,6 +5,8 @@ import { Ship } from "@interfaces";
  * Represents the game board.
  */
 export class GameBoardComponent extends Phaser.GameObjects.Container {
+  private ships: Ship[] = [];
+
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y);
 
@@ -38,6 +40,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
   async placeShips(ships: Ship[]) {
     for (const ship of ships) {
       await this.placeShip(ship);
+      this.ships.push(ship);
     }
   }
 
@@ -73,12 +76,9 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
                 ship.direction === "horizontal" ? size : BOARD_CELL_SIZE;
               rect.height =
                 ship.direction === "vertical" ? size : BOARD_CELL_SIZE;
-            } else {
+            } else if (!this.isShipOverlapping(ship)) {
               rect.disableInteractive();
               this.removeListener(EVENTS.UPDATE_BOARD);
-
-              ship.x = Math.floor(rect.x / BOARD_CELL_SIZE);
-              ship.y = Math.floor(rect.y / BOARD_CELL_SIZE);
 
               resolve();
             }
@@ -111,7 +111,41 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
 
         rect.x = rectX;
         rect.y = rectY;
+
+        ship.x = Math.floor(rectX / BOARD_CELL_SIZE);
+        ship.y = Math.floor(rectY / BOARD_CELL_SIZE);
+
+        if (this.isShipOverlapping(ship)) {
+          rect.setFillStyle(0xff0000, 1);
+        } else {
+          rect.setFillStyle(0x000000, 1);
+        }
       });
+    });
+  }
+
+  /**
+   * Checks if a ship is overlapping with another ship.
+   * @param ship The ship to check.
+   */
+  private isShipOverlapping(ship: Ship) {
+    const shipBounds = new Phaser.Geom.Rectangle(
+      ship.x,
+      ship.y,
+      (ship.direction === "horizontal" ? ship.length : 1) - 0.1,
+      (ship.direction === "vertical" ? ship.length : 1) - 0.1
+    );
+    return this.ships.some((placedShip) => {
+      const placedShipBounds = new Phaser.Geom.Rectangle(
+        placedShip.x,
+        placedShip.y,
+        (placedShip.direction === "horizontal" ? placedShip.length : 1) - 0.1,
+        (placedShip.direction === "vertical" ? placedShip.length : 1) - 0.1
+      );
+      return Phaser.Geom.Intersects.RectangleToRectangle(
+        shipBounds,
+        placedShipBounds
+      );
     });
   }
 }
