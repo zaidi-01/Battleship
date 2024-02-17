@@ -43,14 +43,18 @@ export class GameScene extends Phaser.Scene {
     });
 
     this.events.on(EVENTS.SHIPS_PLACE, this.placeShips, this);
-    this.events.on(EVENTS.LOCAL_TURN, () => console.log("Local turn"));
+    this.events.on(EVENTS.LOCAL_TURN, () => {
+      this.enemyBoard.enable();
+    });
   }
 
   /**
    * Updates the game scene.
    */
   update() {
+    // TODO: Replace with Phaser update logic.
     this.localBoard.update();
+    this.enemyBoard.update();
   }
 
   /**
