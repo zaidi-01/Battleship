@@ -10,4 +10,8 @@ export interface Ship {
   length: number;
   /* The direction of the ship. */
   direction: "horizontal" | "vertical";
+  /* The hits on the ship. */
+  hits: number;
+  /* Whether the ship is sunk. */
+  sunk: boolean;
 }

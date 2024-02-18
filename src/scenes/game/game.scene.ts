@@ -1,6 +1,6 @@
 import { GameBoardComponent } from "@components";
 import { EVENTS, SCENES } from "@constants";
-import { Ship } from "@interfaces";
+import { Ship, TurnSuccessResult } from "@interfaces";
 
 /**
  * Represents the game scene.
@@ -44,6 +44,7 @@ export class GameScene extends Phaser.Scene {
 
     this.events.on(EVENTS.SHIPS_PLACE, this.placeShips, this);
     this.events.on(EVENTS.LOCAL_TURN, this.localTurn, this);
+    this.events.on(EVENTS.LOCAL_TURN_SUCCESS, this.localTurnSuccess, this);
   }
 
   /**
@@ -64,5 +65,12 @@ export class GameScene extends Phaser.Scene {
       this.enemyBoard.disable();
       this.events.emit(EVENTS.LOCAL_TURN_END, point);
     });
+  }
+
+  /**
+   * Handles the local turn success.
+   */
+  private localTurnSuccess(result: TurnSuccessResult) {
+    this.enemyBoard.processTurnResult(result);
   }
 }

@@ -21,3 +21,12 @@ export enum GameType {
 export enum GameState {
   ShipPlacement = "ShipPlacement",
 }
+
+/**
+ * Represents the hit type of a turn.
+ */
+export enum HitType {
+  Miss = "Miss",
+  Hit = "Hit",
+  Sunk = "Sunk",
+}

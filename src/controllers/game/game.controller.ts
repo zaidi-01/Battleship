@@ -1,6 +1,6 @@
 import { BOARD_LENGTH, EVENTS, SCENES, SHIPS } from "@constants";
-import { Difficulty } from "@enums";
-import { Ship } from "@interfaces";
+import { Difficulty, HitType } from "@enums";
+import { Ship, TurnSuccessResult } from "@interfaces";
 import { GameService } from "@services";
 import { isShipOverlapping } from "@utilities";
 import { delay, inject, singleton } from "tsyringe";
@@ -46,10 +46,10 @@ export class GameController {
     this.gameScene.events.on(EVENTS.SHIPS_PLACE_SUCCESS, () => {
       this.gameScene.events.emit(EVENTS.LOCAL_TURN);
     });
-    this.gameScene.events.on(EVENTS.LOCAL_TURN_END, (point: Phaser.Geom.Point) => {
-      console.log(point);
-      this.gameScene.events.emit(EVENTS.LOCAL_TURN);
-    });
+    this.gameScene.events.on(
+      EVENTS.LOCAL_TURN_END,
+      this.processLocalTurn.bind(this)
+    );
   }
 
   /**
@@ -109,5 +109,40 @@ export class GameController {
     }
 
     return ships;
+  }
+
+  /**
+   * Processes the local turn.
+   * @param point The point of the turn.
+   */
+  private processLocalTurn(point: Phaser.Geom.Point) {
+    const ship = this.getShipAtPoint(point);
+    const result: TurnSuccessResult = { point, hitType: HitType.Miss };
+
+    if (ship) {
+      ship.hits++;
+      ship.sunk = ship.hits === ship.length;
+      result.hitType = ship.sunk ? HitType.Sunk : HitType.Hit;
+      result.ship = ship.sunk ? ship : undefined;
+    }
+
+    this.gameScene.events.emit(EVENTS.LOCAL_TURN_SUCCESS, result);
+  }
+
+  /**
+   * Gets the ship at the specified point.
+   * @param point The point to check.
+   * @returns The ship at the point, if any.
+   */
+  private getShipAtPoint(point: Phaser.Geom.Point): Ship | undefined {
+    return this.enemyShips.find((ship) => {
+      const line = new Phaser.Geom.Line(
+        ship.x,
+        ship.y,
+        ship.direction === "horizontal" ? ship.x + ship.length - 1 : ship.x,
+        ship.direction === "vertical" ? ship.y + ship.length - 1 : ship.y
+      );
+      return Phaser.Geom.Intersects.PointToLineSegment(point, line);
+    });
   }
 }

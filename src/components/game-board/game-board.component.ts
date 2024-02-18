@@ -1,5 +1,6 @@
 import { BOARD_CELL_SIZE, BOARD_SIZE, EVENTS } from "@constants";
-import { Ship } from "@interfaces";
+import { HitType } from "@enums";
+import { Ship, TurnSuccessResult } from "@interfaces";
 import { isShipOverlapping } from "@utilities";
 
 /**
@@ -45,7 +46,6 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
           if (pointer.leftButtonDown()) {
             const cell = this.objectCell(this.gridCursor);
             if (!this.hasCellBeenClicked(cell)) {
-              this.cellsClicked.push(cell);
               this.emit(EVENTS.GRID_CLICK, cell);
             }
           }
@@ -96,6 +96,59 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
       await this.placeShip(ship);
       this.ships.push(ship);
     }
+  }
+
+  /**
+   * Processes the result of a turn.
+   * @param result The result of the turn.
+   */
+  processTurnResult(result: TurnSuccessResult) {
+    this.cellsClicked.push(result.point);
+    this.drawHit(result.point, result.hitType);
+    if (result.ship) {
+      this.drawSunkenShip(result.ship);
+    }
+  }
+
+  /**
+   * Draws a hit on the board.
+   * @param point   The point to draw the hit on.
+   * @param hitType The type of hit to draw.
+   */
+  private drawHit(point: Phaser.Geom.Point, hitType: HitType) {
+    const text = this.scene.add
+      .text(
+        point.x * BOARD_CELL_SIZE + BOARD_CELL_SIZE / 2,
+        point.y * BOARD_CELL_SIZE + BOARD_CELL_SIZE / 2,
+        "X",
+        {
+          color: hitType === HitType.Miss ? "#000000" : "#ff0000",
+          fontSize: "24px",
+        }
+      )
+      .setOrigin(0.5);
+    this.add(text);
+  }
+
+  /**
+   * Draws a sunken ship on the board.
+   * @param ship The ship to draw.
+   */
+  private drawSunkenShip(ship: Ship) {
+    const x = ship.x * BOARD_CELL_SIZE;
+    const y = ship.y * BOARD_CELL_SIZE;
+    const size = ship.length * BOARD_CELL_SIZE;
+    const rect = this.scene.add
+      .rectangle(
+        x,
+        y,
+        ship.direction === "horizontal" ? size : BOARD_CELL_SIZE,
+        ship.direction === "vertical" ? size : BOARD_CELL_SIZE
+      )
+      .setOrigin(0)
+      .setFillStyle(0x000000, 1)
+      .setStrokeStyle(1, 0xff0000);
+    this.add(rect);
   }
 
   /**
@@ -160,6 +213,9 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
     });
   }
 
+  /**
+   * Moves an object with the cursor.
+   */
   private moveWithCursor(
     object: Phaser.GameObjects.Rectangle,
     objectSizeX?: number,
