@@ -45,6 +45,7 @@ export class GameScene extends Phaser.Scene {
     this.events.on(EVENTS.SHIPS_PLACE, this.placeShips, this);
     this.events.on(EVENTS.LOCAL_TURN, this.localTurn, this);
     this.events.on(EVENTS.LOCAL_TURN_SUCCESS, this.localTurnSuccess, this);
+    this.events.on(EVENTS.ENEMY_TURN_SUCCESS, this.EnemyTurnSuccess, this);
   }
 
   /**
@@ -72,5 +73,12 @@ export class GameScene extends Phaser.Scene {
    */
   private localTurnSuccess(result: TurnSuccessResult) {
     this.enemyBoard.processTurnResult(result);
+  }
+
+  /**
+   * Handles the enemy turn success.
+   */
+  private EnemyTurnSuccess(result: TurnSuccessResult) {
+    this.localBoard.processTurnResult(result);
   }
 }

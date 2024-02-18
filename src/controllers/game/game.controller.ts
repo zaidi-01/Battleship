@@ -2,7 +2,7 @@ import { BOARD_LENGTH, EVENTS, SCENES, SHIPS } from "@constants";
 import { Difficulty, HitType } from "@enums";
 import { Ship, TurnSuccessResult } from "@interfaces";
 import { GameService } from "@services";
-import { isShipOverlapping } from "@utilities";
+import { hasCellBeenClicked, isShipOverlapping } from "@utilities";
 import { delay, inject, singleton } from "tsyringe";
 
 @singleton()
@@ -12,6 +12,8 @@ export class GameController {
 
   private localShips: Ship[] = [];
   private enemyShips: Ship[] = [];
+
+  private enemyCellsClicked: Phaser.Geom.Point[] = [];
 
   /**
    * Initializes the game controller.
@@ -116,7 +118,41 @@ export class GameController {
    * @param point The point of the turn.
    */
   private processLocalTurn(point: Phaser.Geom.Point) {
-    const ship = this.getShipAtPoint(point);
+    const result = this.getTurnResult(point, true);
+    this.gameScene.events.emit(EVENTS.LOCAL_TURN_SUCCESS, result);
+    this.playEnemyTurn();
+  }
+
+  /**
+   * Play a turn for the enemy.
+   */
+  private playEnemyTurn() {
+    const point = new Phaser.Geom.Point(0, 0);
+    do {
+      point.x = Phaser.Math.RND.between(0, BOARD_LENGTH - 1);
+      point.y = Phaser.Math.RND.between(0, BOARD_LENGTH - 1);
+    } while (hasCellBeenClicked(point, this.enemyCellsClicked));
+
+    this.enemyCellsClicked.push(point);
+    const result = this.getTurnResult(point, false);
+    this.gameScene.events.emit(EVENTS.ENEMY_TURN_SUCCESS, result);
+    this.gameScene.events.emit(EVENTS.LOCAL_TURN);
+  }
+
+  /**
+   * Gets the result of a turn.
+   * @param point The point of the turn.
+   * @param local Whether the turn is local.
+   * @returns The result of the turn.
+   */
+  private getTurnResult(
+    point: Phaser.Geom.Point,
+    local: boolean
+  ): TurnSuccessResult {
+    const ship = this.getShipAtPoint(
+      point,
+      local ? this.enemyShips : this.localShips
+    );
     const result: TurnSuccessResult = { point, hitType: HitType.Miss };
 
     if (ship) {
@@ -126,16 +162,20 @@ export class GameController {
       result.ship = ship.sunk ? ship : undefined;
     }
 
-    this.gameScene.events.emit(EVENTS.LOCAL_TURN_SUCCESS, result);
+    return result;
   }
 
   /**
    * Gets the ship at the specified point.
    * @param point The point to check.
+   * @param ships The ships to check.
    * @returns The ship at the point, if any.
    */
-  private getShipAtPoint(point: Phaser.Geom.Point): Ship | undefined {
-    return this.enemyShips.find((ship) => {
+  private getShipAtPoint(
+    point: Phaser.Geom.Point,
+    ships: Ship[]
+  ): Ship | undefined {
+    return ships.find((ship) => {
       const line = new Phaser.Geom.Line(
         ship.x,
         ship.y,
