@@ -1,7 +1,7 @@
 import { BOARD_CELL_SIZE, BOARD_SIZE, EVENTS } from "@constants";
 import { HitType } from "@enums";
 import { Ship, TurnSuccessResult } from "@interfaces";
-import { isShipOverlapping } from "@utilities";
+import { hasCellBeenClicked, isShipOverlapping } from "@utilities";
 
 /**
  * Represents the game board.
@@ -45,7 +45,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
         (pointer: Phaser.Input.Pointer) => {
           if (pointer.leftButtonDown()) {
             const cell = this.objectCell(this.gridCursor);
-            if (!this.hasCellBeenClicked(cell)) {
+            if (!hasCellBeenClicked(cell, this.cellsClicked)) {
               this.emit(EVENTS.GRID_CLICK, cell);
             }
           }
@@ -55,7 +55,9 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
     this.on(EVENTS.UPDATE_BOARD, () => {
       this.moveWithCursor(this.gridCursor);
 
-      if (this.hasCellBeenClicked(this.objectCell(this.gridCursor))) {
+      if (
+        hasCellBeenClicked(this.objectCell(this.gridCursor), this.cellsClicked)
+      ) {
         this.gridCursor.setFillStyle(0xff0000, 0.5);
         this.gridCursor.setStrokeStyle(1, 0xff0000);
       } else {
@@ -254,17 +256,6 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
     return new Phaser.Geom.Point(
       Math.floor(object.x / BOARD_CELL_SIZE),
       Math.floor(object.y / BOARD_CELL_SIZE)
-    );
-  }
-
-  /**
-   * Checks if a cell has been clicked.
-   * @param cell The cell to check.
-   * @returns True if the cell has been clicked, false otherwise.
-   */
-  private hasCellBeenClicked(cell: Phaser.Geom.Point) {
-    return this.cellsClicked.some(
-      (point) => point.x === cell.x && point.y === cell.y
     );
   }
 }
