@@ -41,7 +41,7 @@ export class GameController {
 
     this.gameScene = context.scene.get(SCENES.GAME);
     this.gameScene.events.on(Phaser.Scenes.Events.CREATE, () => {
-      this.localShips = [...SHIPS];
+      this.localShips = JSON.parse(JSON.stringify(SHIPS));
       this.gameScene.events.emit(EVENTS.SHIPS_PLACE, this.localShips);
 
       this.enemyShips = this.randomizeShips();
@@ -121,7 +121,12 @@ export class GameController {
   private processLocalTurn(point: Phaser.Geom.Point) {
     const result = this.getTurnResult(point, true);
     this.gameScene.events.emit(EVENTS.LOCAL_TURN_SUCCESS, result);
-    this.playEnemyTurn();
+
+    if (this.checkWinCondition(true)) {
+      this.gameScene.events.emit(EVENTS.LOCAL_WIN);
+    } else {
+      this.playEnemyTurn();
+    }
   }
 
   /**
@@ -137,7 +142,12 @@ export class GameController {
     this.enemyCellsClicked.push(point);
     const result = this.getTurnResult(point, false);
     this.gameScene.events.emit(EVENTS.ENEMY_TURN_SUCCESS, result);
-    this.gameScene.events.emit(EVENTS.LOCAL_TURN);
+
+    if (this.checkWinCondition(false)) {
+      this.gameScene.events.emit(EVENTS.ENEMY_WIN);
+    } else {
+      this.gameScene.events.emit(EVENTS.LOCAL_TURN);
+    }
   }
 
   /**
@@ -185,5 +195,15 @@ export class GameController {
       );
       return Phaser.Geom.Intersects.PointToLineSegment(point, line);
     });
+  }
+
+  /**
+   * Checks the win condition.
+   * @param local Whether the win condition is for the local player.
+   * @returns True if the win condition is met, false otherwise.
+   */
+  private checkWinCondition(local: boolean): boolean {
+    const ships = local ? this.enemyShips : this.localShips;
+    return ships.every((ship) => ship.sunk);
   }
 }

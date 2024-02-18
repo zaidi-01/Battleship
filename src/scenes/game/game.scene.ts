@@ -46,6 +46,8 @@ export class GameScene extends Phaser.Scene {
     this.events.on(EVENTS.LOCAL_TURN, this.localTurn, this);
     this.events.on(EVENTS.LOCAL_TURN_SUCCESS, this.localTurnSuccess, this);
     this.events.on(EVENTS.ENEMY_TURN_SUCCESS, this.EnemyTurnSuccess, this);
+    this.events.on(EVENTS.LOCAL_WIN, this.localWin, this);
+    this.events.on(EVENTS.ENEMY_WIN, this.enemyWin, this);
   }
 
   /**
@@ -80,5 +82,42 @@ export class GameScene extends Phaser.Scene {
    */
   private EnemyTurnSuccess(result: TurnSuccessResult) {
     this.localBoard.processTurnResult(result);
+  }
+
+  /**
+   * Handles the local win.
+   */
+  private localWin() {
+    this.displayGameOverScreen("You win!");
+  }
+
+  /**
+   * Handles the enemy win.
+   */
+  private enemyWin() {
+    this.displayGameOverScreen("You lose!");
+  }
+
+  /**
+   * Displays the game over dialog.
+   */
+  private displayGameOverScreen(message: string) {
+    // TODO: Refactor when dialog service is implemented.
+    const gameOverDialog = this.add.text(0, 0, message, {
+      fontSize: "64px",
+      color: "#ffffff",
+      stroke: "#000000",
+      strokeThickness: 4,
+    });
+
+    Phaser.Display.Align.In.Center(
+      gameOverDialog,
+      this.add.zone(
+        this.sys.game.canvas.width / 2,
+        this.sys.game.canvas.height / 2,
+        this.sys.game.canvas.width,
+        this.sys.game.canvas.height
+      )
+    );
   }
 }
