@@ -48,6 +48,6 @@ export class DifficultyScene extends Phaser.Scene {
    * @param difficulty The difficulty of the game.
    */
   startGame(difficulty: Difficulty) {
-    this.events.emit(EVENTS.DIFFICULTY_SELECTED, difficulty);
+    this.events.emit(EVENTS.DIFFICULTY_SELECT_SUCCESS, difficulty);
   }
 }

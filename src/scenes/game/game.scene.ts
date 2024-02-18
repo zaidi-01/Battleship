@@ -52,7 +52,7 @@ export class GameScene extends Phaser.Scene {
    */
   private async placeShips(ships: Ship[]) {
     await this.localBoard.placeShips(ships);
-    this.events.emit(EVENTS.SHIPS_PLACED);
+    this.events.emit(EVENTS.SHIPS_PLACE_SUCCESS);
   }
 
   /**
@@ -60,7 +60,7 @@ export class GameScene extends Phaser.Scene {
    */
   private localTurn() {
     this.enemyBoard.enable();
-    this.enemyBoard.once(EVENTS.GRID_CLICKED, (point: Phaser.Geom.Point) => {
+    this.enemyBoard.once(EVENTS.GRID_CLICK, (point: Phaser.Geom.Point) => {
       this.enemyBoard.disable();
       this.events.emit(EVENTS.LOCAL_TURN_END, point);
     });

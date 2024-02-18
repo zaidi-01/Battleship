@@ -46,7 +46,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
             const cell = this.objectCell(this.gridCursor);
             if (!this.hasCellBeenClicked(cell)) {
               this.cellsClicked.push(cell);
-              this.emit(EVENTS.GRID_CLICKED, cell);
+              this.emit(EVENTS.GRID_CLICK, cell);
             }
           }
         }

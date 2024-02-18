@@ -43,7 +43,7 @@ export class GameController {
 
       this.enemyShips = this.randomizeShips();
     });
-    this.gameScene.events.on(EVENTS.SHIPS_PLACED, () => {
+    this.gameScene.events.on(EVENTS.SHIPS_PLACE_SUCCESS, () => {
       this.gameScene.events.emit(EVENTS.LOCAL_TURN);
     });
     this.gameScene.events.on(EVENTS.LOCAL_TURN_END, (point: Phaser.Geom.Point) => {
@@ -61,7 +61,7 @@ export class GameController {
 
     const difficultyScene = context.scene.get(SCENES.DIFFICULTY);
     difficultyScene.events.on(
-      EVENTS.DIFFICULTY_SELECTED,
+      EVENTS.DIFFICULTY_SELECT_SUCCESS,
       (difficulty: Difficulty) => {
         this.startLocalGame(difficultyScene, difficulty);
       }

@@ -2,11 +2,11 @@
  * Events constants for the game.
  */
 export const EVENTS = {
-  DIFFICULTY_SELECTED: "difficulty-selected",
-  GRID_CLICKED: "grid-clicked",
+  DIFFICULTY_SELECT_SUCCESS: "difficulty-select-success",
+  GRID_CLICK: "grid-click",
   LOCAL_TURN: "local-turn",
   LOCAL_TURN_END: "local-turn-end",
-  SHIPS_PLACE: "ships-placement",
-  SHIPS_PLACED: "ships-placed",
+  SHIPS_PLACE: "ships-place",
+  SHIPS_PLACE_SUCCESS: "ships-place-success",
   UPDATE_BOARD: "update-board",
 };
