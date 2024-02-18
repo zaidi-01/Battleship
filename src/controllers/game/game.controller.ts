@@ -31,8 +31,9 @@ export class GameController {
   public startLocalGame(context: Phaser.Scene, difficulty: Difficulty): void;
   public startLocalGame(context: Phaser.Scene, difficulty?: Difficulty) {
     if (!difficulty) {
-      this.promptForDifficulty(context);
-      return;
+      // TODO: Enable the user to select the difficulty once implemented.
+      // this.promptForDifficulty(context);
+      difficulty = Difficulty.Easy;
     }
 
     this.difficulty = difficulty;
