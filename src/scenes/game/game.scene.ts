@@ -1,6 +1,8 @@
-import { GameBoardComponent } from "@components";
+import { DialogComponent, DialogData, GameBoardComponent } from "@components";
 import { EVENTS, SCENES } from "@constants";
 import { Ship, TurnSuccessResult } from "@interfaces";
+import { DialogService } from "@services";
+import { container } from "tsyringe";
 
 /**
  * Represents the game scene.
@@ -9,11 +11,15 @@ export class GameScene extends Phaser.Scene {
   private localBoard!: GameBoardComponent;
   private enemyBoard!: GameBoardComponent;
 
+  private dialogService: DialogService;
+
   /**
    * Initializes the game scene.
    */
   constructor() {
     super(SCENES.GAME);
+
+    this.dialogService = container.resolve(DialogService);
   }
 
   /**
@@ -102,22 +108,14 @@ export class GameScene extends Phaser.Scene {
    * Displays the game over dialog.
    */
   private displayGameOverScreen(message: string) {
-    // TODO: Refactor when dialog service is implemented.
-    const gameOverDialog = this.add.text(0, 0, message, {
-      fontSize: "64px",
-      color: "#ffffff",
-      stroke: "#000000",
-      strokeThickness: 4,
-    });
+    const dialogData = new DialogData();
+    dialogData.message = message;
+    dialogData.messageStyle.fontSize = "64px";
+    dialogData.confirmText = "Play again";
 
-    Phaser.Display.Align.In.Center(
-      gameOverDialog,
-      this.add.zone(
-        this.sys.game.canvas.width / 2,
-        this.sys.game.canvas.height / 2,
-        this.sys.game.canvas.width,
-        this.sys.game.canvas.height
-      )
-    );
+    const dialogRef = this.dialogService.open(DialogComponent, { data: dialogData });
+    dialogRef.afterClosed$.subscribe((data) => {
+      console.log("Dialog closed with data:", data);
+    });
   }
 }
