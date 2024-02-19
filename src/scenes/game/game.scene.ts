@@ -113,9 +113,19 @@ export class GameScene extends Phaser.Scene {
     dialogData.messageStyle.fontSize = "64px";
     dialogData.confirmText = "Play again";
 
-    const dialogRef = this.dialogService.open(DialogComponent, { data: dialogData });
-    dialogRef.afterClosed$.subscribe((data) => {
-      console.log("Dialog closed with data:", data);
+    const dialogRef = this.dialogService.open(DialogComponent, {
+      data: dialogData,
     });
+    dialogRef.afterClosed$.subscribe(this.reset.bind(this));
+  }
+
+  /**
+   * Resets the game scene.
+   */
+  private reset() {
+    this.localBoard.reset();
+    this.enemyBoard.reset();
+
+    this.events.emit(EVENTS.RESET_GAME);
   }
 }

@@ -9,6 +9,7 @@ import { hasCellBeenClicked, isShipOverlapping } from "@utilities";
 export class GameBoardComponent extends Phaser.GameObjects.Container {
   private ships: Ship[] = [];
   private cellsClicked: Phaser.Geom.Point[] = [];
+  private tempObjects: Phaser.GameObjects.GameObject[] = [];
 
   private gridCursor!: Phaser.GameObjects.Rectangle;
 
@@ -113,6 +114,17 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
   }
 
   /**
+   * Resets the game board.
+   */
+  reset() {
+    this.ships = [];
+    this.cellsClicked = [];
+    
+    this.tempObjects.forEach((obj) => obj.destroy());
+    this.tempObjects = [];
+  }
+
+  /**
    * Draws a hit on the board.
    * @param point   The point to draw the hit on.
    * @param hitType The type of hit to draw.
@@ -129,7 +141,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
         }
       )
       .setOrigin(0.5);
-    this.add(text);
+    this.addTempObject(text);
   }
 
   /**
@@ -150,7 +162,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
       .setOrigin(0)
       .setFillStyle(0x000000, 1)
       .setStrokeStyle(1, 0xff0000);
-    this.add(rect);
+    this.addTempObject(rect);
   }
 
   /**
@@ -193,7 +205,7 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
             }
           }
         );
-      this.add(rect);
+      this.addTempObject(rect);
 
       const moveFunc = () => {
         this.moveWithCursor(
@@ -257,5 +269,14 @@ export class GameBoardComponent extends Phaser.GameObjects.Container {
       Math.floor(object.x / BOARD_CELL_SIZE),
       Math.floor(object.y / BOARD_CELL_SIZE)
     );
+  }
+
+  /**
+   * Adds a temporary object to the game board.
+   * @param obj The object to add.
+   */
+  private addTempObject(obj: Phaser.GameObjects.GameObject) {
+    this.add(obj);
+    this.tempObjects.push(obj);
   }
 }

@@ -40,12 +40,10 @@ export class GameController {
     context.scene.start(SCENES.GAME);
 
     this.gameScene = context.scene.get(SCENES.GAME);
-    this.gameScene.events.on(Phaser.Scenes.Events.CREATE, () => {
-      this.localShips = JSON.parse(JSON.stringify(SHIPS));
-      this.gameScene.events.emit(EVENTS.SHIPS_PLACE, this.localShips);
-
-      this.enemyShips = this.randomizeShips();
-    });
+    this.gameScene.events.once(
+      Phaser.Scenes.Events.CREATE,
+      this.initializeGame.bind(this)
+    );
     this.gameScene.events.on(EVENTS.SHIPS_PLACE_SUCCESS, () => {
       this.gameScene.events.emit(EVENTS.LOCAL_TURN);
     });
@@ -53,6 +51,7 @@ export class GameController {
       EVENTS.LOCAL_TURN_END,
       this.processLocalTurn.bind(this)
     );
+    this.gameScene.events.on(EVENTS.RESET_GAME, this.resetGame.bind(this));
   }
 
   /**
@@ -69,6 +68,27 @@ export class GameController {
         this.startLocalGame(difficultyScene, difficulty);
       }
     );
+  }
+
+  /**
+   * Initializes the game.
+   */
+  private initializeGame() {
+    this.localShips = JSON.parse(JSON.stringify(SHIPS));
+    this.gameScene.events.emit(EVENTS.SHIPS_PLACE, this.localShips);
+
+    this.enemyShips = this.randomizeShips();
+  }
+
+  /**
+   * Resets the game.
+   */
+  private resetGame() {
+    this.localShips = [];
+    this.enemyShips = [];
+    this.enemyCellsClicked = [];
+
+    this.initializeGame();
   }
 
   /**
