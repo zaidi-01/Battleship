@@ -1,6 +1,7 @@
 import { GAME_HEIGHT, GAME_WIDTH } from "@constants";
 import {
   BackgroundScene,
+  DialogContainerScene,
   DifficultyScene,
   GameScene,
   MenuScene,
@@ -33,6 +34,7 @@ export class GameService extends Phaser.Game {
         MenuScene,
         DifficultyScene,
         GameScene,
+        DialogContainerScene,
       ],
     });
   }

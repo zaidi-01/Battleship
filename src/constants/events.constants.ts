@@ -3,6 +3,7 @@
  */
 export const EVENTS = {
   DIFFICULTY_SELECT_SUCCESS: "difficulty-select-success",
+  DIALOG_ADD: "dialog-add",
   ENEMY_TURN_SUCCESS: "enemy-turn-success",
   ENEMY_WIN: "enemy-win",
   GRID_CLICK: "grid-click",

@@ -103,6 +103,7 @@ export class PreloadScene extends Phaser.Scene {
     this.load.on("complete", () => {
       this.scene.start(SCENES.BACKGROUND);
       this.scene.start(SCENES.MENU);
+      this.scene.start(SCENES.DIALOG_CONTAINER);
       this.scene.stop(this);
     });
   }

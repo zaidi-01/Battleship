@@ -3,6 +3,7 @@
  */
 export const SCENES = {
   BACKGROUND: "Background",
+  DIALOG_CONTAINER: "DialogContainer",
   DIFFICULTY: "Difficulty",
   GAME: "Game",
   MENU: "Menu",
