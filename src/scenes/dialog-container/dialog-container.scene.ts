@@ -42,7 +42,7 @@ export class DialogContainerScene extends Phaser.Scene {
       height / 2 - bounds.height / 2
     );
 
-    dialogComponent.on(Phaser.Scenes.Events.SHUTDOWN, (data: any) => {
+    dialogComponent.on(EVENTS.DIALOG_CLOSE, (data: any) => {
       this.dialogContainer.remove(dialogComponent);
       ref.close(data);
     });
