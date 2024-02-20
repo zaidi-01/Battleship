@@ -10,6 +10,7 @@ export class TextButton extends Phaser.GameObjects.Text {
    * @param text      The text to display on the button.
    * @param style     The style of the text.
    * @param callback  The callback function to be called when the button is clicked.
+   * @param origin    The origin of the button.
    */
   constructor(
     scene: Phaser.Scene,
@@ -17,10 +18,17 @@ export class TextButton extends Phaser.GameObjects.Text {
     y: number,
     text: string,
     style: Phaser.Types.GameObjects.Text.TextStyle,
-    callback: () => void
+    callback: () => void,
+    origin = 0
   ) {
+    style.color = style.color || "#fff";
+    style.fontSize = style.fontSize || "24px";
+    style.backgroundColor = style.backgroundColor || "#52321b";
+    style.padding = style.padding || { x: 10, y: 5 };
+
     super(scene, x, y, text, style);
 
+    this.setOrigin(origin);
     this.setInteractive({ useHandCursor: true })
       .on("pointerover", () => this.setTint(0xcccccc))
       .on("pointerout", () => this.clearTint())

@@ -1,4 +1,4 @@
-import { SCENES } from "@constants";
+import { ASSETS, SCENES } from "@constants";
 import { TextButton } from "@shared";
 import { GameController } from "@controllers";
 import { container } from "tsyringe";
@@ -22,13 +22,27 @@ export class MenuScene extends Phaser.Scene {
    * Creates the menu scene.
    */
   create() {
-    const localButton = new TextButton(
-      this,
-      100,
-      100,
-      "Local Game",
-      { color: "#0f0" },
-      this.startLocalGame.bind(this)
+    const { width, height } = this.game.canvas;
+
+    this.add.sprite(width / 2, height / 4, ASSETS.SPRITES.LOGO);
+
+    this.add.existing(
+      new TextButton(
+        this,
+        width / 2,
+        height / 1.5,
+        "START GAME",
+        {
+          color: "#0f0",
+          fontSize: "28px",
+          padding: {
+            x: 20,
+            y: 10,
+          },
+        },
+        this.startLocalGame.bind(this),
+        0.5
+      )
     );
   }
 

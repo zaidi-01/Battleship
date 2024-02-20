@@ -6,7 +6,6 @@ import Phaser from "phaser";
  * This scene is responsible for preloading game assets and displaying a progress bar.
  */
 export class PreloadScene extends Phaser.Scene {
-
   /**
    * Initializes the Preload Scene.
    */
@@ -18,6 +17,11 @@ export class PreloadScene extends Phaser.Scene {
    * Preloads game assets and creates a progress bar.
    */
   preload() {
+    // Sprites
+    for (const sprite of Object.values(ASSETS.SPRITES)) {
+      this.load.image(sprite, `assets/sprites/${sprite}.png`);
+    }
+
     // Spritesheets
     this.load.spritesheet(
       ASSETS.SPRITESHEETS.WATER,
