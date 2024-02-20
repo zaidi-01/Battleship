@@ -1,17 +1,24 @@
 import { DialogComponent, DialogData, GameBoardComponent } from "@components";
 import { EVENTS, SCENES } from "@constants";
+import { HitType } from "@enums";
 import { Ship, TurnSuccessResult } from "@interfaces";
 import { DialogService } from "@services";
+import { BehaviorSubject, Subject, takeUntil } from "rxjs";
 import { container } from "tsyringe";
 
 /**
  * Represents the game scene.
  */
 export class GameScene extends Phaser.Scene {
+  private dialogService: DialogService;
+
   private localBoard!: GameBoardComponent;
   private enemyBoard!: GameBoardComponent;
 
-  private dialogService: DialogService;
+  private hits$ = new BehaviorSubject<number>(0);
+  private misses$ = new BehaviorSubject<number>(0);
+
+  private destroy$ = new Subject<void>();
 
   /**
    * Initializes the game scene.
@@ -54,6 +61,33 @@ export class GameScene extends Phaser.Scene {
     this.events.on(EVENTS.ENEMY_TURN_SUCCESS, this.EnemyTurnSuccess, this);
     this.events.on(EVENTS.LOCAL_WIN, this.localWin, this);
     this.events.on(EVENTS.ENEMY_WIN, this.enemyWin, this);
+    this.events.on(Phaser.Scenes.Events.DESTROY, this.destroy, this);
+
+    const hitsText = this.add.text(32, 32, "Hits: 0", {
+      fontSize: "32px",
+      color: "#ffffff",
+    });
+    const missesText = this.add.text(32, 64, "Misses: 0", {
+      fontSize: "32px",
+      color: "#ffffff",
+    });
+
+    this.hits$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((hits) => hitsText.setText(`Hits: ${hits}`));
+    this.misses$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((misses) => missesText.setText(`Misses: ${misses}`));
+  }
+
+  /**
+   * Handles destroying the game scene.
+   */
+  private destroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+
+    this.events.removeAllListeners();
   }
 
   /**
@@ -81,6 +115,16 @@ export class GameScene extends Phaser.Scene {
    */
   private localTurnSuccess(result: TurnSuccessResult) {
     this.enemyBoard.processTurnResult(result);
+
+    switch (result.hitType) {
+      case HitType.Hit:
+      case HitType.Sunk:
+        this.hits$.next(this.hits$.value + 1);
+        break;
+      case HitType.Miss:
+        this.misses$.next(this.misses$.value + 1);
+        break;
+    }
   }
 
   /**
@@ -123,6 +167,9 @@ export class GameScene extends Phaser.Scene {
    * Resets the game scene.
    */
   private reset() {
+    this.hits$.next(0);
+    this.misses$.next(0);
+
     this.localBoard.reset();
     this.enemyBoard.reset();
 
