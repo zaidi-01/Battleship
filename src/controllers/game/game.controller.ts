@@ -1,5 +1,6 @@
 import { inject, singleton } from "tsyringe";
 import { LocalGameController } from "./local/local-game.controller";
+import { RemoteGameController } from "./remote/remote-game.controller";
 
 @singleton()
 export class GameController {
@@ -9,7 +10,9 @@ export class GameController {
    */
   constructor(
     @inject(LocalGameController)
-    private localGameController: LocalGameController
+    private localGameController: LocalGameController,
+    @inject(RemoteGameController)
+    private remoteGameController: RemoteGameController
   ) {}
 
   /**
@@ -18,5 +21,13 @@ export class GameController {
    */
   public startLocalGame(context: Phaser.Scene) {
     this.localGameController.startGame(context);
+  }
+
+  /**
+   * Starts a new remote game.
+   * @param context The context of the game.
+   */
+  public startRemoteGame(context: Phaser.Scene) {
+    this.remoteGameController.startGame(context);
   }
 }

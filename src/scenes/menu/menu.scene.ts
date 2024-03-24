@@ -1,6 +1,6 @@
 import { ASSETS, SCENES } from "@constants";
-import { TextButton } from "@shared";
 import { GameController } from "@controllers";
+import { TextButton } from "@shared";
 import { container } from "tsyringe";
 
 /**
@@ -30,8 +30,8 @@ export class MenuScene extends Phaser.Scene {
       new TextButton(
         this,
         width / 2,
-        height / 1.5,
-        "START GAME",
+        height / 1.6,
+        "SINGLEPLAYER",
         {
           color: "#0f0",
           fontSize: "28px",
@@ -44,6 +44,24 @@ export class MenuScene extends Phaser.Scene {
         0.5
       )
     );
+    this.add.existing(
+      new TextButton(
+        this,
+        width / 2,
+        height / 1.4,
+        "MULTIPLAYER",
+        {
+          color: "#0f0",
+          fontSize: "28px",
+          padding: {
+            x: 20,
+            y: 10,
+          },
+        },
+        this.startMultiplayerGame.bind(this),
+        0.5
+      )
+    );
   }
 
   /**
@@ -51,5 +69,12 @@ export class MenuScene extends Phaser.Scene {
    */
   startLocalGame() {
     this.gameController.startLocalGame(this);
+  }
+
+  /**
+   * Starts a multiplayer game.
+   */
+  startMultiplayerGame() {
+    this.gameController.startRemoteGame(this);
   }
 }
