@@ -1,3 +1,4 @@
+import { gameController } from "@server/controllers";
 import { ExtWebSocket, WebSocketMessage } from "@server/interfaces";
 import { IncomingMessage } from "http";
 import { Duplex } from "stream";
@@ -39,7 +40,7 @@ wss.on("connection", (client: ExtWebSocket) => {
         throw new Error("Action is required");
       }
 
-      // TODO: Handle the message
+      gameController.handleMessage(client, message);
     } catch (error) {
       if (error instanceof SyntaxError) {
         client.sendError("Invalid message format");
