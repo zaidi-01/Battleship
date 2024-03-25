@@ -39,6 +39,7 @@
       "@services": ["src/services"],
       "@shared": ["src/shared"],
       "@utilities": ["src/utilities"],
+      "@server/controllers": ["server/src/controllers"],
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
