@@ -6,6 +6,7 @@ import {
   GameScene,
   MenuScene,
   PreloadScene,
+  RemoteSelectScene,
 } from "@scenes";
 import { singleton } from "tsyringe";
 
@@ -35,6 +36,7 @@ export class GameService extends Phaser.Game {
         DifficultyScene,
         GameScene,
         DialogContainerScene,
+        RemoteSelectScene,
       ],
     });
   }

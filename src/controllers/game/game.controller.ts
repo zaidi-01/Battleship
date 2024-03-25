@@ -30,4 +30,20 @@ export class GameController {
   public startRemoteGame(context: Phaser.Scene) {
     this.remoteGameController.startGame(context);
   }
+
+  /**
+   * Creates a remote game.
+   * @param context The context of the game.
+   */
+  public createRemoteGame(context: Phaser.Scene) {
+    this.remoteGameController.createGame(context);
+  }
+
+  /**
+   * Joins a remote game.
+   * @param context The context of the game.
+   */
+  public joinRemoteGame(context: Phaser.Scene) {
+    this.remoteGameController.joinGame(context);
+  }
 }

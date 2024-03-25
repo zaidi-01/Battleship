@@ -8,4 +8,5 @@ export const SCENES = {
   GAME: "Game",
   MENU: "Menu",
   PRELOAD: "Preload",
+  REMOTE_SELECT: "RemoteSelect",
 };
