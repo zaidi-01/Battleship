@@ -1,3 +1,4 @@
+import { WebSocketMessage } from "@server/interfaces";
 import { IncomingMessage } from "http";
 import { Duplex } from "stream";
 import { WebSocketServer } from "ws";
@@ -5,10 +6,32 @@ import { WebSocketServer } from "ws";
 const wss = new WebSocketServer({ noServer: true });
 
 wss.on("connection", (ws) => {
-  // TODO: Handle the connection
-  ws.on("message", (message) => {
-    console.log(`Received message => ${message}`);
-    ws.send("Hello from the server!");
+  ws.on("message", (rawMessage) => {
+    try {
+      const message: WebSocketMessage = JSON.parse(rawMessage.toString());
+
+      if (!message.action) {
+        throw new Error("Action is required");
+      }
+
+      // TODO: Handle the message
+    } catch (error) {
+      if (error instanceof SyntaxError) {
+        ws.send(
+          JSON.stringify({
+            action: "error",
+            data: "Invalid message format",
+          } as WebSocketMessage)
+        );
+      } else {
+        ws.send(
+          JSON.stringify({
+            action: "error",
+            data: (error as Error).message,
+          } as WebSocketMessage)
+        );
+      }
+    }
   });
 });
 
