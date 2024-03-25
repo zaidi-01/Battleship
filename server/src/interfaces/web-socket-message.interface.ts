@@ -10,4 +10,8 @@ export interface WebSocketMessage<T = any> {
    * The data.
    */
   data?: T;
+  /**
+   * The type.
+   */
+  type?: "error" | "success";
 }

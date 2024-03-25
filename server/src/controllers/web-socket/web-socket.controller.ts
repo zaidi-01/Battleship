@@ -1,12 +1,37 @@
-import { WebSocketMessage } from "@server/interfaces";
+import { ExtWebSocket, WebSocketMessage } from "@server/interfaces";
 import { IncomingMessage } from "http";
 import { Duplex } from "stream";
 import { WebSocketServer } from "ws";
 
 const wss = new WebSocketServer({ noServer: true });
 
-wss.on("connection", (ws) => {
-  ws.on("message", (rawMessage) => {
+wss.on("connection", (client: ExtWebSocket) => {
+  client.sendMessage = (message: WebSocketMessage) =>
+    client.send(JSON.stringify(message));
+  client.sendData = (action: string, data: any, cb?: (err?: Error) => void) =>
+    client.sendMessage(
+      {
+        action,
+        data,
+        type: "success",
+      },
+      cb
+    );
+  client.sendError = (
+    error: string,
+    message?: WebSocketMessage,
+    cb?: (err?: Error) => void
+  ) =>
+    client.sendMessage(
+      {
+        action: message?.action || "error",
+        data: error,
+        type: "error",
+      },
+      cb
+    );
+
+  client.on("message", (rawMessage) => {
     try {
       const message: WebSocketMessage = JSON.parse(rawMessage.toString());
 
@@ -17,19 +42,9 @@ wss.on("connection", (ws) => {
       // TODO: Handle the message
     } catch (error) {
       if (error instanceof SyntaxError) {
-        ws.send(
-          JSON.stringify({
-            action: "error",
-            data: "Invalid message format",
-          } as WebSocketMessage)
-        );
+        client.sendError("Invalid message format");
       } else {
-        ws.send(
-          JSON.stringify({
-            action: "error",
-            data: (error as Error).message,
-          } as WebSocketMessage)
-        );
+        client.sendError((error as Error).message);
       }
     }
   });
@@ -46,7 +61,7 @@ export function handleUpgrade(
   socket: Duplex,
   head: Buffer
 ) {
-  wss.handleUpgrade(req, socket, head, (ws) => {
-    wss.emit("connection", ws, req);
+  wss.handleUpgrade(req, socket, head, (client) => {
+    wss.emit("connection", client);
   });
 }
