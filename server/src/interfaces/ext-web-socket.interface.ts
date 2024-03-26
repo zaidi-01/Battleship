@@ -1,4 +1,3 @@
-import { Game } from "@server/models";
 import { WebSocket } from "ws";
 import { WebSocketMessage } from "./web-socket-message.interface";
 
@@ -6,11 +5,6 @@ import { WebSocketMessage } from "./web-socket-message.interface";
  * Extended WebSocket class.
  */
 export interface ExtWebSocket extends WebSocket {
-  /**
-   * The game.
-   */
-  game?: Game;
-
   /**
    * Sends a message.
    * @param message The message to send.

@@ -1,5 +1,5 @@
 import { ACTIONS } from "@server/constants";
-import { ExtWebSocket } from "@server/interfaces";
+import { Player } from "@server/interfaces";
 import { gameUtilities } from "@server/utilities";
 
 /**
@@ -13,7 +13,7 @@ export class Game {
   /**
    * The players.
    */
-  private players_: ExtWebSocket[] = [];
+  private players_: Player[] = [];
 
   /**
    * Gets the game id.
@@ -25,7 +25,7 @@ export class Game {
   /**
    * Gets the players.
    */
-  public get players(): ExtWebSocket[] {
+  public get players(): Player[] {
     return [...this.players_];
   }
 
@@ -40,7 +40,7 @@ export class Game {
    * Adds a player to the game.
    * @param player The player.
    */
-  public addPlayer(player: ExtWebSocket) {
+  public addPlayer(player: Player) {
     player.game = this;
     this.players_.push(player);
   }

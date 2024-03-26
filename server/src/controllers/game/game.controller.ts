@@ -1,5 +1,5 @@
 import { ACTIONS } from "@server/constants";
-import { ExtWebSocket, WebSocketMessage } from "@server/interfaces";
+import { ExtWebSocket, Player, WebSocketMessage } from "@server/interfaces";
 import { Game } from "@server/models";
 
 const games = new Map<string, Game>();
@@ -32,29 +32,29 @@ export function handleMessage(client: ExtWebSocket, message: WebSocketMessage) {
 
 /**
  * Create a game.
- * @param client The web socket client.
+ * @param player The player.
  * @param message The message.
  */
-function createGame(client: ExtWebSocket) {
-  if (client.game) {
+function createGame(player: Player) {
+  if (player.game) {
     throw new Error("Already in a game");
   }
 
   const game = new Game();
   games.set(game.id, game);
 
-  game.addPlayer(client);
+  game.addPlayer(player);
 
-  client.sendData(ACTIONS.CREATE_GAME, game.id);
+  player.sendData(ACTIONS.CREATE_GAME, game.id);
 }
 
 /**
  * Join a game.
- * @param client The web socket client.
+ * @param player The player.
  * @param gameId The game id.
  */
-function joinGame(client: ExtWebSocket, gameId: string) {
-  if (client.game) {
+function joinGame(player: Player, gameId: string) {
+  if (player.game) {
     throw new Error("Already in a game");
   }
 
@@ -70,9 +70,9 @@ function joinGame(client: ExtWebSocket, gameId: string) {
     throw new Error("Invalid game ID");
   }
 
-  game.addPlayer(client);
+  game.addPlayer(player);
 
-  client.sendData(ACTIONS.JOIN_GAME, game.id);
+  player.sendAction(ACTIONS.JOIN_GAME);
 
   game.start();
 }
