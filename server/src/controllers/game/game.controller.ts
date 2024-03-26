@@ -61,13 +61,13 @@ function joinGame(client: ExtWebSocket, gameId: string) {
   const game = games.get(gameId);
 
   if (!game) {
-    throw new Error("Invalid game id");
+    throw new Error("Invalid game ID");
   }
 
   const players = game.players;
 
   if (players.length >= 2) {
-    throw new Error("Invalid game id");
+    throw new Error("Invalid game ID");
   }
 
   game.addPlayer(client);

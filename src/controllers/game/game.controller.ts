@@ -42,8 +42,15 @@ export class GameController {
   /**
    * Joins a remote game.
    * @param context The context of the game.
+   * @param gameId The game ID.
    */
-  public joinRemoteGame(context: Phaser.Scene) {
-    this.remoteGameController.joinGame(context);
+  public joinRemoteGame(context: Phaser.Scene): void;
+  public joinRemoteGame(context: Phaser.Scene, gameId: string): void;
+  public joinRemoteGame(context: Phaser.Scene, gameId?: string) {
+    if (gameId) {
+      this.remoteGameController.joinGame(context, gameId);
+    } else {
+      this.remoteGameController.joinGame(context);
+    }
   }
 }

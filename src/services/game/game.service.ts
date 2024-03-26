@@ -4,6 +4,7 @@ import {
   DialogContainerScene,
   DifficultyScene,
   GameCreatedScene,
+  GameJoinScene,
   GameScene,
   MenuScene,
   PreloadScene,
@@ -24,6 +25,10 @@ export class GameService extends Phaser.Game {
       type: Phaser.AUTO,
       backgroundColor: "#062436",
       disableContextMenu: true,
+      parent: "game",
+      dom: {
+        createContainer: true,
+      },
       scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -39,6 +44,7 @@ export class GameService extends Phaser.Game {
         DialogContainerScene,
         RemoteSelectScene,
         GameCreatedScene,
+        GameJoinScene,
       ],
     });
   }

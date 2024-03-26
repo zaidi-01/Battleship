@@ -49,7 +49,11 @@ export class WebSocketService extends WebSocket {
    * @param cb Callback.
    * @param cbError Callback on error.
    */
-  public once<T>(action: string, cb: (data?: T) => void, cbError?: () => void) {
+  public once<T>(
+    action: string,
+    cb: (data?: T) => void,
+    cbError?: (error?: string) => void
+  ) {
     this.message$
       .pipe(
         filter((message) => message.action === action),
@@ -57,7 +61,7 @@ export class WebSocketService extends WebSocket {
       )
       .subscribe((message) => {
         if (message.type === "error") {
-          cbError?.();
+          cbError?.(message.data);
         } else {
           cb(message.data);
         }
@@ -70,12 +74,16 @@ export class WebSocketService extends WebSocket {
    * @param cb Callback.
    * @param cbError Callback on error.
    */
-  public on<T>(action: string, cb: (data?: T) => void, cbError?: () => void) {
+  public on<T>(
+    action: string,
+    cb: (data?: T) => void,
+    cbError?: (error?: string) => void
+  ) {
     this.message$
       .pipe(filter((message) => message.action === action))
       .subscribe((message) => {
         if (message.type === "error") {
-          cbError?.();
+          cbError?.(message.data);
         } else {
           cb(message.data);
         }
