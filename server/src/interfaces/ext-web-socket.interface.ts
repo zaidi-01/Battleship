@@ -12,9 +12,9 @@ export interface ExtWebSocket extends WebSocket {
   game?: Game;
 
   /**
-   * Sends a message
-   * @param message The message to send
-   * @param cb Callback
+   * Sends a message.
+   * @param message The message to send.
+   * @param cb Callback.
    */
   sendMessage<T>(
     message: WebSocketMessage<T>,
@@ -22,18 +22,25 @@ export interface ExtWebSocket extends WebSocket {
   ): void;
 
   /**
-   * Sends data
-   * @param action The action
-   * @param data The data
-   * @param cb Callback
+   * Sends an empty message.
+   * @param action The action.
+   * @param cb Callback.
+   */
+  sendAction(action: string, cb?: (err?: Error) => void): void;
+
+  /**
+   * Sends a message with data.
+   * @param action The action.
+   * @param data The data.
+   * @param cb Callback.
    */
   sendData<T>(action: string, data: T, cb?: (err?: Error) => void): void;
 
   /**
-   * Sends an error message
-   * @param message The message that caused the error
-   * @param error The error
-   * @param cb Callback
+   * Sends an error message.
+   * @param message The message that caused the error.
+   * @param error The error.
+   * @param cb Callback.
    */
   sendError(
     error: string,

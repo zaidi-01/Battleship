@@ -52,6 +52,13 @@ export class GameJoinScene extends Phaser.Scene {
       if (event.code === "Enter") {
         this.joinGame(inputElement.value);
       }
+
+      if (errorText.text) {
+        errorText.setText("");
+        inputLabel.y += 25;
+        input.y += 25
+        inputElement.style.borderColor = "#0f0";
+      }
     });
 
     const errorText = this.add

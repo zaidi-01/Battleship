@@ -25,6 +25,8 @@ export class RemoteGameController {
   public createGame(context: Phaser.Scene) {
     this.wss.once(ACTIONS.CREATE_GAME, (gameId?: string) => {
       context.scene.start(SCENES.GAME_CREATED, { gameId });
+
+      this.wss.once(ACTIONS.GAME_START, this.initializeGame.bind(this, context));
     });
 
     this.wss.sendAction(ACTIONS.CREATE_GAME);
@@ -46,7 +48,7 @@ export class RemoteGameController {
     this.wss.once(
       ACTIONS.JOIN_GAME,
       () => {
-        console.log("Joined game");
+        this.wss.once(ACTIONS.GAME_START, this.initializeGame.bind(this, context));
       },
       (error) => {
         context.events.emit(EVENTS.JOIN_GAME_ERROR, error);
@@ -54,5 +56,14 @@ export class RemoteGameController {
     );
 
     this.wss.sendData(ACTIONS.JOIN_GAME, gameId);
+  }
+
+  /**
+   * Initializes the game.
+   * @param context The context of the game.
+   */
+  private initializeGame(context: Phaser.Scene) {
+    context.scene.start(SCENES.GAME);
+    const gameScene = context.scene.get(SCENES.GAME);
   }
 }

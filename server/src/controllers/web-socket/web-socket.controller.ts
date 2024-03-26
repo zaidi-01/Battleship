@@ -9,6 +9,8 @@ const wss = new WebSocketServer({ noServer: true });
 wss.on("connection", (client: ExtWebSocket) => {
   client.sendMessage = (message: WebSocketMessage) =>
     client.send(JSON.stringify(message));
+  client.sendAction = (action: string, cb?: (err?: Error) => void) =>
+    client.sendMessage({ action, type: "success" }, cb);
   client.sendData = (action: string, data: any, cb?: (err?: Error) => void) =>
     client.sendMessage(
       {

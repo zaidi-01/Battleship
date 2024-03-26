@@ -73,4 +73,14 @@ function joinGame(client: ExtWebSocket, gameId: string) {
   game.addPlayer(client);
 
   client.sendData(ACTIONS.JOIN_GAME, game.id);
+
+  game.start();
+}
+
+/**
+ * Start a game.
+ * @game The game.
+ */
+export function startGame(game: Game) {
+  game.start();
 }
