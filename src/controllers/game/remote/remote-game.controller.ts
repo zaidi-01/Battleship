@@ -1,9 +1,12 @@
-import { ACTIONS, EVENTS, SCENES } from "@constants";
+import { ACTIONS, EVENTS, SCENES, SHIPS } from "@constants";
+import { Ship } from "@interfaces";
 import { WebSocketService } from "@services";
 import { inject, singleton } from "tsyringe";
 
 @singleton()
 export class RemoteGameController {
+  private ships: Ship[] = [];
+
   /**
    * Initializes the RemoteGameController.
    * @param wss The WebSocketService.
@@ -25,8 +28,12 @@ export class RemoteGameController {
   public createGame(context: Phaser.Scene) {
     this.wss.once(ACTIONS.CREATE_GAME, (gameId?: string) => {
       context.scene.start(SCENES.GAME_CREATED, { gameId });
+      const gameCreatedScene = context.scene.get(SCENES.GAME_CREATED);
 
-      this.wss.once(ACTIONS.GAME_START, this.initializeGame.bind(this, context));
+      this.wss.once(
+        ACTIONS.GAME_START,
+        this.initializeGame.bind(this, gameCreatedScene)
+      );
     });
 
     this.wss.sendAction(ACTIONS.CREATE_GAME);
@@ -48,7 +55,10 @@ export class RemoteGameController {
     this.wss.once(
       ACTIONS.JOIN_GAME,
       () => {
-        this.wss.once(ACTIONS.GAME_START, this.initializeGame.bind(this, context));
+        this.wss.once(
+          ACTIONS.GAME_START,
+          this.initializeGame.bind(this, context)
+        );
       },
       (error) => {
         context.events.emit(EVENTS.JOIN_GAME_ERROR, error);
@@ -65,5 +75,13 @@ export class RemoteGameController {
   private initializeGame(context: Phaser.Scene) {
     context.scene.start(SCENES.GAME);
     const gameScene = context.scene.get(SCENES.GAME);
+
+    gameScene.events.once(Phaser.Scenes.Events.CREATE, () => {
+      this.ships = JSON.parse(JSON.stringify(SHIPS));
+      gameScene.events.emit(EVENTS.SHIPS_PLACE, this.ships);
+    });
+    gameScene.events.once(EVENTS.SHIPS_PLACE_SUCCESS, () => {
+      this.wss.sendData(ACTIONS.SHIPS_PLACED, this.ships);
+    });
   }
 }

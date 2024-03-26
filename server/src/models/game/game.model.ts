@@ -1,5 +1,6 @@
 import { ACTIONS } from "@server/constants";
-import { Player } from "@server/interfaces";
+import { GameState } from "@server/enums";
+import { Player, Ship } from "@server/interfaces";
 import { gameUtilities } from "@server/utilities";
 
 /**
@@ -10,6 +11,10 @@ export class Game {
    * The game id.
    */
   private id_: string;
+  /**
+   * The game state.
+   */
+  private state_: GameState = GameState.WAITING;
   /**
    * The players.
    */
@@ -23,10 +28,21 @@ export class Game {
   }
 
   /**
+   * Gets the game state.
+   */
+  public get state(): GameState {
+    return this.state_;
+  }
+
+  /**
    * Gets the players.
    */
   public get players(): Player[] {
     return [...this.players_];
+  }
+
+  private get canStart(): boolean {
+    return this.players_.length === 2 && this.players_.every((player) => !!player.ships);
   }
 
   /**
@@ -46,9 +62,32 @@ export class Game {
   }
 
   /**
+   * Setup the game.
+   */
+  public setup() {
+    // TODO: Keep ships server-side and send them to the client.
+    this.state_ = GameState.SETUP;
+    this.players_.forEach((player) => player.sendAction(ACTIONS.GAME_START));
+  }
+
+  /**
+   * Adds a player's ships.
+   * @param player The player.
+   * @param ships The ships.
+   */
+  public addShips(player: Player, ships: Ship[]) {
+    player.ships = ships;
+  }
+
+  /**
    * Starts the game.
    */
   public start() {
-    this.players_.forEach((player) => player.sendAction(ACTIONS.GAME_START));
+    if (!this.canStart) {
+      return;
+    }
+
+    this.state_ = GameState.PLAY;
+    // TODO: Implement game logic
   }
 }
