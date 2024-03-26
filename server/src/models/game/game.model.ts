@@ -1,6 +1,11 @@
 import { ACTIONS } from "@server/constants";
-import { GameState } from "@server/enums";
-import { Player, Ship } from "@server/interfaces";
+import { GameState, HitType } from "@server/enums";
+import {
+  Player,
+  PlayerTurnEnd,
+  PlayerTurnSuccessResult,
+  Ship,
+} from "@server/interfaces";
 import { gameUtilities } from "@server/utilities";
 
 /**
@@ -19,6 +24,10 @@ export class Game {
    * The players.
    */
   private players_: Player[] = [];
+  /**
+   * The current player.
+   */
+  private currentPlayer?: Player;
 
   /**
    * Gets the game id.
@@ -42,7 +51,10 @@ export class Game {
   }
 
   private get canStart(): boolean {
-    return this.players_.length === 2 && this.players_.every((player) => !!player.ships);
+    return (
+      this.players_.length === 2 &&
+      this.players_.every((player) => !!player.ships)
+    );
   }
 
   /**
@@ -58,6 +70,13 @@ export class Game {
    */
   public addPlayer(player: Player) {
     player.game = this;
+
+    const opponent = this.players_[0];
+    if (opponent) {
+      player.opponent = opponent;
+      opponent.opponent = player;
+    }
+
     this.players_.push(player);
   }
 
@@ -88,6 +107,98 @@ export class Game {
     }
 
     this.state_ = GameState.PLAY;
-    // TODO: Implement game logic
+
+    const player = this.players_[Math.floor(Math.random() * 2)];
+    this.startPlayerTurn(player);
+  }
+
+  /**
+   * Processes a player's turn.
+   * @param player The player.
+   * @param turn The turn.
+   */
+  public processTurn(player: Player, turn: PlayerTurnEnd) {
+    if (player !== this.currentPlayer) {
+      throw new Error("Not the player's turn");
+    }
+
+    const result = this.getTurnResult(player, turn);
+    player.sendData(ACTIONS.PLAYER_TURN_SUCCESS, result);
+    player.opponent!.sendData(ACTIONS.OPPONENT_TURN_SUCCESS, result);
+
+    this.startPlayerTurn(player.opponent!);
+  }
+
+  /**
+   * Starts the player's turn.
+   * @param player The player.
+   */
+  private startPlayerTurn(player: Player) {
+    this.currentPlayer = player;
+
+    player.sendAction(ACTIONS.PLAYER_TURN);
+    player.opponent!.sendAction(ACTIONS.OPPONENT_TURN);
+  }
+
+  /**
+   * Gets the result of a turn.
+   * @param player The player.
+   * @param point The turn point.
+   * @returns The result of the turn.
+   */
+  private getTurnResult(
+    player: Player,
+    point: { x: number; y: number }
+  ): PlayerTurnSuccessResult {
+    const ship = this.getShipAtPoint(point, player.opponent!.ships!);
+    const result: PlayerTurnSuccessResult = { point, hitType: HitType.Miss };
+
+    if (ship) {
+      ship.hits++;
+      ship.sunk = ship.hits === ship.length;
+      result.hitType = ship.sunk ? HitType.Sunk : HitType.Hit;
+      result.ship = ship.sunk ? ship : undefined;
+    }
+
+    return result;
+  }
+
+  /**
+   * Gets the ship at the specified point.
+   * @param point The point to check.
+   * @param ships The ships to check.
+   * @returns The ship at the point, if any.
+   */
+  private getShipAtPoint(
+    point: { x: number; y: number },
+    ships: Ship[]
+  ): Ship | undefined {
+    return ships.find((ship) => {
+      const p1 = { x: ship.x, y: ship.y };
+      const p2 = {
+        x: ship.direction === "horizontal" ? ship.x + ship.length - 1 : ship.x,
+        y: ship.direction === "vertical" ? ship.y + ship.length - 1 : ship.y,
+      };
+
+      return this.distance(point, p1) + this.distance(point, p2) ===
+        this.distance(p1, p2)
+        ? ship
+        : undefined;
+    });
+  }
+
+  /**
+   * Calculates the distance between two points.
+   * @param point1 The first point.
+   * @param point2 The second point.
+   * @returns The distance between the points.
+   */
+  private distance(
+    point1: { x: number; y: number },
+    point2: { x: number; y: number }
+  ): number {
+    return Math.sqrt(
+      Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2)
+    );
   }
 }

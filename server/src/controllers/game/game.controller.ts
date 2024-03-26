@@ -3,6 +3,7 @@ import { GameState } from "@server/enums";
 import {
   ExtWebSocket,
   Player,
+  PlayerTurnEnd,
   Ship,
   WebSocketMessage,
 } from "@server/interfaces";
@@ -26,6 +27,9 @@ export function handleMessage(client: ExtWebSocket, message: WebSocketMessage) {
         break;
       case ACTIONS.SHIPS_PLACED:
         playerShipsPlaced(client as Player, message.data);
+        break;
+      case ACTIONS.PLAYER_TURN_END:
+        playerTurnEnd(client as Player, message.data);
         break;
       default:
         throw new SyntaxError("Invalid action");
@@ -112,4 +116,23 @@ function playerShipsPlaced(player: Player, ships: Ship[]) {
   player.sendAction(ACTIONS.SHIPS_PLACED);
 
   game.start();
+}
+
+/**
+ * Handle player turn end.
+ * @param player The player.
+ * @param turn The turn.
+ */
+function playerTurnEnd(player: Player, turn: PlayerTurnEnd) {
+  const game = player.game;
+
+  if (!game) {
+    throw new Error("Not in a game");
+  }
+
+  if (game.state !== GameState.PLAY) {
+    throw new Error("Invalid game state");
+  }
+
+  game.processTurn(player, turn);
 }

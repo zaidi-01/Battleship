@@ -13,5 +13,9 @@ export interface Player extends ExtWebSocket {
   /**
    * The ships.
    */
-  ships: Ship[];
+  ships?: Ship[];
+  /**
+   * The opponent.
+   */
+  opponent?: Player;
 }

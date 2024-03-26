@@ -1,5 +1,5 @@
 import { ACTIONS, EVENTS, SCENES, SHIPS } from "@constants";
-import { Ship } from "@interfaces";
+import { Ship, TurnSuccessResult } from "@interfaces";
 import { WebSocketService } from "@services";
 import { inject, singleton } from "tsyringe";
 
@@ -82,6 +82,19 @@ export class RemoteGameController {
     });
     gameScene.events.once(EVENTS.SHIPS_PLACE_SUCCESS, () => {
       this.wss.sendData(ACTIONS.SHIPS_PLACED, this.ships);
+    });
+    gameScene.events.on(EVENTS.LOCAL_TURN_END, (point: Phaser.Geom.Point) => {
+      this.wss.sendData(ACTIONS.PLAYER_TURN_END, point);
+    });
+
+    this.wss.on(ACTIONS.PLAYER_TURN, () => {
+      gameScene.events.emit(EVENTS.LOCAL_TURN);
+    });
+    this.wss.on(ACTIONS.PLAYER_TURN_SUCCESS, (result?: TurnSuccessResult) => {
+      gameScene.events.emit(EVENTS.LOCAL_TURN_SUCCESS, result);
+    });
+    this.wss.on(ACTIONS.OPPONENT_TURN_SUCCESS, (result?: TurnSuccessResult) => {
+      gameScene.events.emit(EVENTS.ENEMY_TURN_SUCCESS, result);
     });
   }
 }
