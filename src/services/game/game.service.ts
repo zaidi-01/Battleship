@@ -3,6 +3,7 @@ import {
   BackgroundScene,
   DialogContainerScene,
   DifficultyScene,
+  GameCreatedScene,
   GameScene,
   MenuScene,
   PreloadScene,
@@ -37,6 +38,7 @@ export class GameService extends Phaser.Game {
         GameScene,
         DialogContainerScene,
         RemoteSelectScene,
+        GameCreatedScene,
       ],
     });
   }

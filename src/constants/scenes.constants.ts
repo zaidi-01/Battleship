@@ -6,6 +6,7 @@ export const SCENES = {
   DIALOG_CONTAINER: "DialogContainer",
   DIFFICULTY: "Difficulty",
   GAME: "Game",
+  GAME_CREATED: "GameCreated",
   MENU: "Menu",
   PRELOAD: "Preload",
   REMOTE_SELECT: "RemoteSelect",
