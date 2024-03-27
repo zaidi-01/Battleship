@@ -139,6 +139,15 @@ export class Game {
     player.sendData(ACTIONS.PLAYER_TURN_SUCCESS, result);
     player.opponent!.sendData(ACTIONS.OPPONENT_TURN_SUCCESS, result);
 
+    if (this.checkWinCondition(player)) {
+      this.state = GameState.END;
+
+      player.sendAction(ACTIONS.PLAYER_WIN);
+      player.opponent!.sendAction(ACTIONS.OPPONENT_WIN);
+
+      return;
+    }
+
     this.startPlayerTurn(player.opponent!);
   }
 
@@ -213,5 +222,13 @@ export class Game {
     return Math.sqrt(
       Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2)
     );
+  }
+
+  /**
+   * Checks the win condition.
+   * @param player The player.
+   */
+  private checkWinCondition(player: Player): boolean {
+    return player.opponent!.ships!.every((ship) => ship.sunk);
   }
 }
