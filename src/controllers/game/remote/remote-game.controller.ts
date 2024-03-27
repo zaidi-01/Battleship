@@ -1,4 +1,5 @@
 import { ACTIONS, EVENTS, SCENES, SHIPS } from "@constants";
+import { GameState } from "@enums";
 import { Ship, TurnSuccessResult } from "@interfaces";
 import { WebSocketService } from "@services";
 import { inject, singleton } from "tsyringe";
@@ -31,8 +32,8 @@ export class RemoteGameController {
       const gameCreatedScene = context.scene.get(SCENES.GAME_CREATED);
 
       this.wss.once(
-        ACTIONS.GAME_START,
-        this.initializeGame.bind(this, gameCreatedScene)
+        ACTIONS.GAME_STATE_CHANGE,
+        this.handleGameStateChange.bind(this, gameCreatedScene)
       );
     });
 
@@ -56,8 +57,8 @@ export class RemoteGameController {
       ACTIONS.JOIN_GAME,
       () => {
         this.wss.once(
-          ACTIONS.GAME_START,
-          this.initializeGame.bind(this, context)
+          ACTIONS.GAME_STATE_CHANGE,
+          this.handleGameStateChange.bind(this, context)
         );
       },
       (error) => {
@@ -66,6 +67,17 @@ export class RemoteGameController {
     );
 
     this.wss.sendData(ACTIONS.JOIN_GAME, gameId);
+  }
+
+  /**
+   * Handles the game state change.
+   * @param context The context of the game.
+   * @param state The game state.
+   */
+  private handleGameStateChange(context: Phaser.Scene, state?: GameState) {
+    if (state === GameState.SETUP) {
+      this.initializeGame(context);
+    }
   }
 
   /**
@@ -80,13 +92,19 @@ export class RemoteGameController {
       this.ships = JSON.parse(JSON.stringify(SHIPS));
       gameScene.events.emit(EVENTS.SHIPS_PLACE, this.ships);
     });
-    gameScene.events.once(EVENTS.SHIPS_PLACE_SUCCESS, () => {
+    gameScene.events.once(EVENTS.SHIPS_PLACE_END, () => {
       this.wss.sendData(ACTIONS.SHIPS_PLACED, this.ships);
     });
     gameScene.events.on(EVENTS.LOCAL_TURN_END, (point: Phaser.Geom.Point) => {
       this.wss.sendData(ACTIONS.PLAYER_TURN_END, point);
     });
 
+    this.wss.once(ACTIONS.SHIPS_PLACED, () => {
+      gameScene.events.emit(EVENTS.SHIPS_PLACE_SUCCESS);
+    });
+    this.wss.on(ACTIONS.GAME_STATE_CHANGE, (state?: GameState) => {
+      gameScene.events.emit(EVENTS.GAME_STATE_CHANGE, state);
+    });
     this.wss.on(ACTIONS.PLAYER_TURN, () => {
       gameScene.events.emit(EVENTS.LOCAL_TURN);
     });

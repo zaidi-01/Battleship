@@ -8,6 +8,7 @@ export const EVENTS = {
   ENEMY_TURN: "enemy-turn",
   ENEMY_TURN_SUCCESS: "enemy-turn-success",
   ENEMY_WIN: "enemy-win",
+  GAME_STATE_CHANGE: "game-state-change",
   GRID_CLICK: "grid-click",
   JOIN_GAME_ERROR: "join-game-error",
   LOCAL_TURN: "local-turn",
@@ -16,6 +17,7 @@ export const EVENTS = {
   LOCAL_WIN: "local-win",
   RESET_GAME: "reset-game",
   SHIPS_PLACE: "ships-place",
+  SHIPS_PLACE_END: "ships-place-success",
   SHIPS_PLACE_SUCCESS: "ships-place-success",
   UPDATE_BOARD: "update-board",
 };

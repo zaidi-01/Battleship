@@ -1,6 +1,6 @@
 import { DialogComponent, DialogData, GameBoardComponent } from "@components";
 import { EVENTS, SCENES } from "@constants";
-import { HitType } from "@enums";
+import { GameState, HitType } from "@enums";
 import { Ship, TurnSuccessResult } from "@interfaces";
 import { DialogService } from "@services";
 import { BehaviorSubject, Subject, takeUntil } from "rxjs";
@@ -14,6 +14,7 @@ export class GameScene extends Phaser.Scene {
 
   private localTurnText!: Phaser.GameObjects.Text;
   private enemyTurnText!: Phaser.GameObjects.Text;
+  private waitingForPlayerText!: Phaser.GameObjects.Text;
 
   private localBoard!: GameBoardComponent;
   private enemyBoard!: GameBoardComponent;
@@ -58,7 +59,9 @@ export class GameScene extends Phaser.Scene {
       y: height - padding - boardHeight,
     });
 
+    this.events.on(EVENTS.GAME_STATE_CHANGE, this.stateChanged, this);
     this.events.on(EVENTS.SHIPS_PLACE, this.placeShips, this);
+    this.events.on(EVENTS.SHIPS_PLACE_SUCCESS, this.shipsPlaced, this);
     this.events.on(EVENTS.LOCAL_TURN, this.localTurn, this);
     this.events.on(EVENTS.LOCAL_TURN_SUCCESS, this.localTurnSuccess, this);
     this.events.on(EVENTS.ENEMY_TURN, this.enemyTurn, this);
@@ -88,6 +91,13 @@ export class GameScene extends Phaser.Scene {
         color: "#ffffff",
       })
       .setVisible(false);
+    this.waitingForPlayerText = this.add
+      .text(width / 2, height / 2, "Waiting for player to place ships...", {
+        fontSize: "32px",
+        color: "#ffffff",
+      })
+      .setVisible(false)
+      .setOrigin(0.5);
 
     this.hits$
       .pipe(takeUntil(this.destroy$))
@@ -108,12 +118,29 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
+   * Handles the game state change.
+   * @param state The new state of the game.
+   */
+  private stateChanged(state: GameState) {
+    if (state === GameState.PLAY) {
+      this.waitingForPlayerText.setVisible(false);
+    }
+  }
+
+  /**
    * Places the ships on the local board.
    * @param ships The ships to place.
    */
   private async placeShips(ships: Ship[]) {
     await this.localBoard.placeShips(ships);
-    this.events.emit(EVENTS.SHIPS_PLACE_SUCCESS);
+    this.events.emit(EVENTS.SHIPS_PLACE_END);
+  }
+
+  /**
+   * Handles the ships placed event.
+   */
+  private shipsPlaced() {
+    this.waitingForPlayerText.setVisible(true);
   }
 
   /**

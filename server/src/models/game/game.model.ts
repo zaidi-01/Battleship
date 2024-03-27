@@ -50,10 +50,24 @@ export class Game {
     return [...this.players_];
   }
 
+  /**
+   * Gets a value indicating whether the game can start.
+   */
   private get canStart(): boolean {
     return (
       this.players_.length === 2 &&
       this.players_.every((player) => !!player.ships)
+    );
+  }
+
+  /**
+   * Sets the game state and sends the action to the players.
+   * @param value The value to set.
+   */
+  private set state(value: GameState) {
+    this.state_ = value;
+    this.players_.forEach((player) =>
+      player.sendData(ACTIONS.GAME_STATE_CHANGE, value)
     );
   }
 
@@ -85,8 +99,7 @@ export class Game {
    */
   public setup() {
     // TODO: Keep ships server-side and send them to the client.
-    this.state_ = GameState.SETUP;
-    this.players_.forEach((player) => player.sendAction(ACTIONS.GAME_START));
+    this.state = GameState.SETUP;
   }
 
   /**
@@ -106,7 +119,7 @@ export class Game {
       return;
     }
 
-    this.state_ = GameState.PLAY;
+    this.state = GameState.PLAY;
 
     const player = this.players_[Math.floor(Math.random() * 2)];
     this.startPlayerTurn(player);

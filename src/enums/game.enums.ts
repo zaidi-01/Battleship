@@ -32,3 +32,21 @@ export enum HitType {
    */
   Sunk = "Sunk",
 }
+
+/**
+ * The possible states of a game.
+ */
+export enum GameState {
+  /**
+   * The game is in the setup phase.
+   */
+  SETUP = "SETUP",
+  /**
+   * The game is in the play phase.
+   */
+  PLAY = "PLAY",
+  /**
+   * The game is in the end phase.
+   */
+  END = "END",
+}

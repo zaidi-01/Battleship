@@ -35,7 +35,7 @@ export class LocalGameController {
       Phaser.Scenes.Events.CREATE,
       this.initializeGame.bind(this)
     );
-    this.gameScene.events.on(EVENTS.SHIPS_PLACE_SUCCESS, () => {
+    this.gameScene.events.on(EVENTS.SHIPS_PLACE_END, () => {
       this.gameScene.events.emit(EVENTS.LOCAL_TURN);
     });
     this.gameScene.events.on(
