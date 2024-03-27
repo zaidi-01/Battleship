@@ -2,12 +2,14 @@
   "name": "battleship-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently \"npm:client\" \"npm:server\"",
     "client": "npm run --prefix ../client build:watch",
     "server": "tsx watch src/server.ts",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "npm run --prefix ../client build",
     "build:server": "tsc -p . && tsc-alias"
   },
   "author": "Syed Zaidi",
