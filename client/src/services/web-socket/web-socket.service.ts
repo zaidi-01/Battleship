@@ -10,7 +10,11 @@ export class WebSocketService extends WebSocket {
    * Initializes the WebSocketService.
    */
   constructor() {
-    super("ws://localhost:5000");
+    super(
+      `${window.location.protocol === "https:" ? "wss" : "ws"}://${
+        window.location.host
+      }`
+    );
 
     this.addEventListener("message", (event) => {
       const message: WebSocketMessage = JSON.parse(event.data);
