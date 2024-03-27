@@ -31,6 +31,9 @@ export function handleMessage(client: ExtWebSocket, message: WebSocketMessage) {
       case ACTIONS.PLAYER_TURN_END:
         playerTurnEnd(client as Player, message.data);
         break;
+      case ACTIONS.PLAY_AGAIN:
+        playerPlayAgain(client as Player);
+        break;
       default:
         throw new SyntaxError("Invalid action");
     }
@@ -135,4 +138,24 @@ function playerTurnEnd(player: Player, turn: PlayerTurnEnd) {
   }
 
   game.processTurn(player, turn);
+}
+
+/**
+ * Handle player play again.
+ */
+function playerPlayAgain(player: Player) {
+  const game = player.game;
+
+  if (!game) {
+    throw new Error("Not in a game");
+  }
+
+  if (game.state !== GameState.END) {
+    throw new Error("Invalid game state");
+  }
+
+  player.playAgain = true;
+  player.sendAction(ACTIONS.PLAY_AGAIN);
+
+  game.reset();
 }

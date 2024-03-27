@@ -42,7 +42,7 @@ export class LocalGameController {
       EVENTS.LOCAL_TURN_END,
       this.processLocalTurn.bind(this)
     );
-    this.gameScene.events.on(EVENTS.RESET_GAME, this.resetGame.bind(this));
+    this.gameScene.events.on(EVENTS.PLAY_AGAIN, this.resetGame.bind(this));
   }
 
   /**
@@ -78,6 +78,8 @@ export class LocalGameController {
     this.localShips = [];
     this.enemyShips = [];
     this.enemyCellsClicked = [];
+
+    this.gameScene.events.emit(EVENTS.RESET_GAME);
 
     this.initializeGame();
   }

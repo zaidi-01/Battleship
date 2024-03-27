@@ -92,18 +92,26 @@ export class RemoteGameController {
       this.ships = JSON.parse(JSON.stringify(SHIPS));
       gameScene.events.emit(EVENTS.SHIPS_PLACE, this.ships);
     });
-    gameScene.events.once(EVENTS.SHIPS_PLACE_END, () => {
+    gameScene.events.on(EVENTS.SHIPS_PLACE_END, () => {
       this.wss.sendData(ACTIONS.SHIPS_PLACED, this.ships);
     });
     gameScene.events.on(EVENTS.LOCAL_TURN_END, (point: Phaser.Geom.Point) => {
       this.wss.sendData(ACTIONS.PLAYER_TURN_END, point);
     });
+    gameScene.events.on(EVENTS.PLAY_AGAIN, () => {
+      this.wss.sendAction(ACTIONS.PLAY_AGAIN);
+    });
 
-    this.wss.once(ACTIONS.SHIPS_PLACED, () => {
+    this.wss.on(ACTIONS.SHIPS_PLACED, () => {
       gameScene.events.emit(EVENTS.SHIPS_PLACE_SUCCESS);
     });
     this.wss.on(ACTIONS.GAME_STATE_CHANGE, (state?: GameState) => {
       gameScene.events.emit(EVENTS.GAME_STATE_CHANGE, state);
+
+      if (state === GameState.SETUP) {
+        this.ships = JSON.parse(JSON.stringify(SHIPS));
+        gameScene.events.emit(EVENTS.SHIPS_PLACE, this.ships);
+      }
     });
     this.wss.on(ACTIONS.PLAYER_TURN, () => {
       gameScene.events.emit(EVENTS.LOCAL_TURN);
@@ -111,7 +119,7 @@ export class RemoteGameController {
     this.wss.on(ACTIONS.PLAYER_TURN_SUCCESS, (result?: TurnSuccessResult) => {
       gameScene.events.emit(EVENTS.LOCAL_TURN_SUCCESS, result);
     });
-    this.wss.once(ACTIONS.PLAYER_WIN, () => {
+    this.wss.on(ACTIONS.PLAYER_WIN, () => {
       gameScene.events.emit(EVENTS.LOCAL_WIN);
     });
     this.wss.on(ACTIONS.OPPONENT_TURN, () => {
@@ -120,8 +128,14 @@ export class RemoteGameController {
     this.wss.on(ACTIONS.OPPONENT_TURN_SUCCESS, (result?: TurnSuccessResult) => {
       gameScene.events.emit(EVENTS.ENEMY_TURN_SUCCESS, result);
     });
-    this.wss.once(ACTIONS.OPPONENT_WIN, () => {
+    this.wss.on(ACTIONS.OPPONENT_WIN, () => {
       gameScene.events.emit(EVENTS.ENEMY_WIN);
+    });
+    this.wss.on(ACTIONS.PLAY_AGAIN, () => {
+      gameScene.events.emit(EVENTS.PLAY_AGAIN_SUCCESS);
+    });
+    this.wss.on(ACTIONS.RESET_GAME, () => {
+      gameScene.events.emit(EVENTS.RESET_GAME);
     });
   }
 }

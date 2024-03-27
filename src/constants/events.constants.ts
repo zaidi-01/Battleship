@@ -15,9 +15,11 @@ export const EVENTS = {
   LOCAL_TURN_END: "local-turn-end",
   LOCAL_TURN_SUCCESS: "local-turn-success",
   LOCAL_WIN: "local-win",
+  PLAY_AGAIN: "play-again",
+  PLAY_AGAIN_SUCCESS: "play-again-success",
   RESET_GAME: "reset-game",
   SHIPS_PLACE: "ships-place",
-  SHIPS_PLACE_END: "ships-place-success",
+  SHIPS_PLACE_END: "ships-place-end",
   SHIPS_PLACE_SUCCESS: "ships-place-success",
   UPDATE_BOARD: "update-board",
 };

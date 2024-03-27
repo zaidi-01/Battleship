@@ -68,6 +68,8 @@ export class GameScene extends Phaser.Scene {
     this.events.on(EVENTS.ENEMY_TURN_SUCCESS, this.EnemyTurnSuccess, this);
     this.events.on(EVENTS.LOCAL_WIN, this.localWin, this);
     this.events.on(EVENTS.ENEMY_WIN, this.enemyWin, this);
+    this.events.on(EVENTS.RESET_GAME, this.reset, this);
+    this.events.on(EVENTS.PLAY_AGAIN_SUCCESS, this.playAgainSuccess, this);
     this.events.on(Phaser.Scenes.Events.DESTROY, this.destroy, this);
 
     const hitsText = this.add.text(32, 32, "Hits: 0", {
@@ -92,7 +94,7 @@ export class GameScene extends Phaser.Scene {
       })
       .setVisible(false);
     this.waitingForPlayerText = this.add
-      .text(width / 2, height / 2, "Waiting for player to place ships...", {
+      .text(width / 2, height / 2, "Waiting for other player...", {
         fontSize: "32px",
         color: "#ffffff",
       })
@@ -216,7 +218,7 @@ export class GameScene extends Phaser.Scene {
     const dialogRef = this.dialogService.open(DialogComponent, {
       data: dialogData,
     });
-    dialogRef.afterClosed$.subscribe(this.reset.bind(this));
+    dialogRef.afterClosed$.subscribe(() => this.events.emit(EVENTS.PLAY_AGAIN));
   }
 
   /**
@@ -229,6 +231,13 @@ export class GameScene extends Phaser.Scene {
     this.localBoard.reset();
     this.enemyBoard.reset();
 
-    this.events.emit(EVENTS.RESET_GAME);
+    this.waitingForPlayerText.setVisible(false);
+  }
+
+  /**
+   * Handles the play again success event.
+   */
+  private playAgainSuccess() {
+    this.waitingForPlayerText.setVisible(true);
   }
 }

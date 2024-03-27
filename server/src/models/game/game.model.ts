@@ -55,8 +55,19 @@ export class Game {
    */
   private get canStart(): boolean {
     return (
+      this.state === GameState.SETUP &&
       this.players_.length === 2 &&
       this.players_.every((player) => !!player.ships)
+    );
+  }
+
+  /**
+   * Gets a value indicating whether the game can reset.
+   */
+  private get canReset(): boolean {
+    return (
+      this.state === GameState.END &&
+      this.players.every((player) => player.playAgain)
     );
   }
 
@@ -123,6 +134,25 @@ export class Game {
 
     const player = this.players_[Math.floor(Math.random() * 2)];
     this.startPlayerTurn(player);
+  }
+
+  /**
+   * Resets the game.
+   */
+  public reset() {
+    if (!this.canReset) {
+      return;
+    }
+
+    this.state = GameState.WAITING;
+
+    this.players_.forEach((player) => {
+      player.ships = undefined;
+      player.playAgain = false;
+      player.sendAction(ACTIONS.RESET_GAME);
+    });
+
+    this.setup();
   }
 
   /**

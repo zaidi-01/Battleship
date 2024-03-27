@@ -18,4 +18,8 @@ export interface Player extends ExtWebSocket {
    * The opponent.
    */
   opponent?: Player;
+  /**
+   * Whether the player wants to play again.
+   */
+  playAgain?: boolean;
 }
