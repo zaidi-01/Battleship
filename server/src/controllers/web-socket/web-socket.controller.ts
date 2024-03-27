@@ -2,11 +2,26 @@ import { gameController } from "@server/controllers";
 import { ExtWebSocket, WebSocketMessage } from "@server/interfaces";
 import { IncomingMessage } from "http";
 import { Duplex } from "stream";
-import { WebSocketServer } from "ws";
+import { WebSocket, WebSocketServer } from "ws";
 
 const wss = new WebSocketServer({ noServer: true });
 
+const cleanupInterval = setInterval(() => {
+  wss.clients.forEach((client: WebSocket) => {
+    const extClient = client as ExtWebSocket;
+
+    if (extClient.isAlive === false) {
+      extClient.terminate();
+    }
+
+    extClient.isAlive = false;
+    extClient.ping();
+  });
+}, 1 * 1000);
+
 wss.on("connection", (client: ExtWebSocket) => {
+  client.isAlive = true;
+
   client.sendMessage = (message: WebSocketMessage) =>
     client.send(JSON.stringify(message));
   client.sendAction = (action: string, cb?: (err?: Error) => void) =>
@@ -34,6 +49,8 @@ wss.on("connection", (client: ExtWebSocket) => {
       cb
     );
 
+  client.on("error", console.error);
+  client.on("pong", heartbeat.bind(null, client));
   client.on("message", (rawMessage) => {
     try {
       const message: WebSocketMessage = JSON.parse(rawMessage.toString());
@@ -52,6 +69,7 @@ wss.on("connection", (client: ExtWebSocket) => {
     }
   });
 });
+wss.on("close", clearInterval.bind(null, cleanupInterval));
 
 /**
  * Handle the upgrade event
@@ -67,4 +85,12 @@ export function handleUpgrade(
   wss.handleUpgrade(req, socket, head, (client) => {
     wss.emit("connection", client);
   });
+}
+
+/**
+ * Sets client as alive
+ * @param client The client
+ */
+function heartbeat(client: ExtWebSocket) {
+  client.isAlive = true;
 }

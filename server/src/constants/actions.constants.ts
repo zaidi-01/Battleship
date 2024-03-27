@@ -5,6 +5,7 @@ export const ACTIONS = {
   CREATE_GAME: "create-game",
   GAME_STATE_CHANGE: "game-state-change",
   JOIN_GAME: "join-game",
+  OPPONENT_DISCONNECT: "opponent-disconnect",
   OPPONENT_TURN: "opponent-turn",
   OPPONENT_TURN_SUCCESS: "opponent-turn-success",
   OPPONENT_WIN: "opponent-win",

@@ -64,9 +64,10 @@ export class GameScene extends Phaser.Scene {
     this.events.on(EVENTS.SHIPS_PLACE_SUCCESS, this.shipsPlaced, this);
     this.events.on(EVENTS.LOCAL_TURN, this.localTurn, this);
     this.events.on(EVENTS.LOCAL_TURN_SUCCESS, this.localTurnSuccess, this);
+    this.events.on(EVENTS.LOCAL_WIN, this.localWin, this);
+    this.events.on(EVENTS.ENEMY_DISCONNECT, this.enemyDisconnect, this);
     this.events.on(EVENTS.ENEMY_TURN, this.enemyTurn, this);
     this.events.on(EVENTS.ENEMY_TURN_SUCCESS, this.EnemyTurnSuccess, this);
-    this.events.on(EVENTS.LOCAL_WIN, this.localWin, this);
     this.events.on(EVENTS.ENEMY_WIN, this.enemyWin, this);
     this.events.on(EVENTS.RESET_GAME, this.reset, this);
     this.events.on(EVENTS.PLAY_AGAIN_SUCCESS, this.playAgainSuccess, this);
@@ -206,19 +207,31 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
+   * Handles the enemy disconnect.
+   */
+  private enemyDisconnect() {
+    this.displayGameOverScreen("You win by forfeit!", false);
+  }
+
+  /**
    * Displays the game over dialog.
    * @param message The message to display.
    */
-  private displayGameOverScreen(message: string) {
+  private displayGameOverScreen(message: string, playAgain = true) {
     const dialogData = new DialogData();
     dialogData.message = message;
-    dialogData.messageStyle.fontSize = "64px";
-    dialogData.confirmText = "Play again";
+    dialogData.messageStyle.fontSize = "48px";
+    dialogData.confirmText = playAgain ? "Play again" : "Menu";
 
     const dialogRef = this.dialogService.open(DialogComponent, {
       data: dialogData,
     });
-    dialogRef.afterClosed$.subscribe(() => this.events.emit(EVENTS.PLAY_AGAIN));
+    dialogRef.afterClosed$.subscribe(() => {
+      if (playAgain) {
+        this.events.emit(EVENTS.PLAY_AGAIN);
+      }
+      // TODO: Navigate to menu
+    });
   }
 
   /**

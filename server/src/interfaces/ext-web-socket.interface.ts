@@ -6,6 +6,11 @@ import { WebSocketMessage } from "./web-socket-message.interface";
  */
 export interface ExtWebSocket extends WebSocket {
   /**
+   * Whether the client is alive.
+   */
+  isAlive: boolean;
+
+  /**
    * Sends a message.
    * @param message The message to send.
    * @param cb Callback.

@@ -5,6 +5,7 @@ export const EVENTS = {
   DIFFICULTY_SELECT_SUCCESS: "difficulty-select-success",
   DIALOG_ADD: "dialog-add",
   DIALOG_CLOSE: "dialog-close",
+  ENEMY_DISCONNECT: "enemy-disconnect",
   ENEMY_TURN: "enemy-turn",
   ENEMY_TURN_SUCCESS: "enemy-turn-success",
   ENEMY_WIN: "enemy-win",

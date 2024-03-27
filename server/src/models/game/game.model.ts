@@ -94,6 +94,14 @@ export class Game {
    * @param player The player.
    */
   public addPlayer(player: Player) {
+    if (this.players_.length >= 2) {
+      throw new Error("Game is full");
+    }
+
+    if (this.players_.includes(player)) {
+      throw new Error("Player is already in the game");
+    }
+
     player.game = this;
 
     const opponent = this.players_[0];
@@ -101,6 +109,8 @@ export class Game {
       player.opponent = opponent;
       opponent.opponent = player;
     }
+
+    player.once("close", this.playerDisconnect.bind(this, player));
 
     this.players_.push(player);
   }
@@ -147,8 +157,7 @@ export class Game {
     this.state = GameState.WAITING;
 
     this.players_.forEach((player) => {
-      player.ships = undefined;
-      player.playAgain = false;
+      this.resetPlayer(player);
       player.sendAction(ACTIONS.RESET_GAME);
     });
 
@@ -260,5 +269,27 @@ export class Game {
    */
   private checkWinCondition(player: Player): boolean {
     return player.opponent!.ships!.every((ship) => ship.sunk);
+  }
+
+  /**
+   * Handles a player disconnecting.
+   */
+  private playerDisconnect(player: Player) {
+    const opponent = player.opponent;
+    
+    if (opponent) {
+      opponent.sendAction(ACTIONS.OPPONENT_DISCONNECT);
+      opponent.game = undefined;
+      this.resetPlayer(opponent);
+    }
+  }
+
+  /**
+   * Resets a player.
+   * @param player The player.
+   */
+  public resetPlayer(player: Player) {
+    player.ships = undefined;
+    player.playAgain = false;
   }
 }

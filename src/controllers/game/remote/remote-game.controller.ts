@@ -102,6 +102,8 @@ export class RemoteGameController {
       this.wss.sendAction(ACTIONS.PLAY_AGAIN);
     });
 
+    // TODO: Cleanup event listeners on game scene destroy.
+
     this.wss.on(ACTIONS.SHIPS_PLACED, () => {
       gameScene.events.emit(EVENTS.SHIPS_PLACE_SUCCESS);
     });
@@ -136,6 +138,9 @@ export class RemoteGameController {
     });
     this.wss.on(ACTIONS.RESET_GAME, () => {
       gameScene.events.emit(EVENTS.RESET_GAME);
+    });
+    this.wss.on(ACTIONS.OPPONENT_DISCONNECT, () => {
+      gameScene.events.emit(EVENTS.ENEMY_DISCONNECT);
     });
   }
 }
