@@ -12,6 +12,9 @@ import { container } from "tsyringe";
 export class GameScene extends Phaser.Scene {
   private dialogService: DialogService;
 
+  private localTurnText!: Phaser.GameObjects.Text;
+  private enemyTurnText!: Phaser.GameObjects.Text;
+
   private localBoard!: GameBoardComponent;
   private enemyBoard!: GameBoardComponent;
 
@@ -58,6 +61,7 @@ export class GameScene extends Phaser.Scene {
     this.events.on(EVENTS.SHIPS_PLACE, this.placeShips, this);
     this.events.on(EVENTS.LOCAL_TURN, this.localTurn, this);
     this.events.on(EVENTS.LOCAL_TURN_SUCCESS, this.localTurnSuccess, this);
+    this.events.on(EVENTS.ENEMY_TURN, this.enemyTurn, this);
     this.events.on(EVENTS.ENEMY_TURN_SUCCESS, this.EnemyTurnSuccess, this);
     this.events.on(EVENTS.LOCAL_WIN, this.localWin, this);
     this.events.on(EVENTS.ENEMY_WIN, this.enemyWin, this);
@@ -71,6 +75,19 @@ export class GameScene extends Phaser.Scene {
       fontSize: "32px",
       color: "#ffffff",
     });
+
+    this.localTurnText = this.add
+      .text(width / 2, 32, "Your turn", {
+        fontSize: "32px",
+        color: "#ffffff",
+      })
+      .setVisible(false);
+    this.enemyTurnText = this.add
+      .text(width / 2, 32, "Enemy's turn", {
+        fontSize: "32px",
+        color: "#ffffff",
+      })
+      .setVisible(false);
 
     this.hits$
       .pipe(takeUntil(this.destroy$))
@@ -103,15 +120,18 @@ export class GameScene extends Phaser.Scene {
    * Handles the local turn.
    */
   private localTurn() {
+    this.localTurnText.setVisible(true);
     this.enemyBoard.enable();
     this.enemyBoard.once(EVENTS.GRID_CLICK, (point: Phaser.Geom.Point) => {
       this.enemyBoard.disable();
+      this.localTurnText.setVisible(false);
       this.events.emit(EVENTS.LOCAL_TURN_END, point);
     });
   }
 
   /**
    * Handles the local turn success.
+   * @param result The turn result.
    */
   private localTurnSuccess(result: TurnSuccessResult) {
     this.enemyBoard.processTurnResult(result);
@@ -128,9 +148,17 @@ export class GameScene extends Phaser.Scene {
   }
 
   /**
+   * Handles the enemy turn.
+   */
+  private enemyTurn() {
+    this.enemyTurnText.setVisible(true);
+  }
+
+  /**
    * Handles the enemy turn success.
    */
   private EnemyTurnSuccess(result: TurnSuccessResult) {
+    this.enemyTurnText.setVisible(false);
     this.localBoard.processTurnResult(result);
   }
 
@@ -150,6 +178,7 @@ export class GameScene extends Phaser.Scene {
 
   /**
    * Displays the game over dialog.
+   * @param message The message to display.
    */
   private displayGameOverScreen(message: string) {
     const dialogData = new DialogData();

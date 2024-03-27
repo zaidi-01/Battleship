@@ -93,6 +93,9 @@ export class RemoteGameController {
     this.wss.on(ACTIONS.PLAYER_TURN_SUCCESS, (result?: TurnSuccessResult) => {
       gameScene.events.emit(EVENTS.LOCAL_TURN_SUCCESS, result);
     });
+    this.wss.on(ACTIONS.OPPONENT_TURN, () => {
+      gameScene.events.emit(EVENTS.ENEMY_TURN);
+    });
     this.wss.on(ACTIONS.OPPONENT_TURN_SUCCESS, (result?: TurnSuccessResult) => {
       gameScene.events.emit(EVENTS.ENEMY_TURN_SUCCESS, result);
     });
