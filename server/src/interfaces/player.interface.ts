@@ -1,4 +1,4 @@
-import { Game } from "@server/models";
+import { Game } from "@models";
 import { ExtWebSocket } from "./ext-web-socket.interface";
 import { Ship } from "./ship.interface";
 

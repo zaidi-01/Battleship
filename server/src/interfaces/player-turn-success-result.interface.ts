@@ -1,4 +1,4 @@
-import { HitType } from "@server/enums";
+import { HitType } from "@enums";
 import { Ship } from "./ship.interface";
 
 /**

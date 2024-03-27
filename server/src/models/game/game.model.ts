@@ -1,12 +1,12 @@
-import { ACTIONS } from "@server/constants";
-import { GameState, HitType } from "@server/enums";
+import { ACTIONS } from "@constants";
+import { GameState, HitType } from "@enums";
 import {
   Player,
   PlayerTurnEnd,
   PlayerTurnSuccessResult,
   Ship,
-} from "@server/interfaces";
-import { gameUtilities } from "@server/utilities";
+} from "@interfaces";
+import { gameUtilities } from "@utilities";
 
 /**
  * Represents a game.

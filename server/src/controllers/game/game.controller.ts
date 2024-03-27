@@ -1,13 +1,13 @@
-import { ACTIONS } from "@server/constants";
-import { GameState } from "@server/enums";
+import { ACTIONS } from "@constants";
+import { GameState } from "@enums";
 import {
   ExtWebSocket,
   Player,
   PlayerTurnEnd,
   Ship,
   WebSocketMessage,
-} from "@server/interfaces";
-import { Game } from "@server/models";
+} from "@interfaces";
+import { Game } from "@models";
 
 const games = new Map<string, Game>();
 

@@ -1,5 +1,5 @@
-import { gameController } from "@server/controllers";
-import { ExtWebSocket, WebSocketMessage } from "@server/interfaces";
+import { gameController } from "@controllers";
+import { ExtWebSocket, WebSocketMessage } from "@interfaces";
 import { IncomingMessage } from "http";
 import { Duplex } from "stream";
 import { WebSocket, WebSocketServer } from "ws";
